@@ -1,6 +1,6 @@
 {
-  "name": "vermillion-test",
-  "version": "1.0.0",
+  "name": "agate",
+  "version": "0.1.0",
   "scripts": {
     "start": "node server/controller.js",
     "heroku-postbuild": "cd react-ui/ && npm install && npm run build"
@@ -15,6 +15,6 @@
     "browserify": "^16.1.1",
     "express": "^4.16.3",
     "heroku-cli": "^6.15.35",
-    "npm": "^5.7.1"
+    "mongodb": "^3.0.5"
   }
 }
