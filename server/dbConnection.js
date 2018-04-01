@@ -1,7 +1,8 @@
 const mongodb = require('mongodb');
 
 module.exports = new Promise(function (resolve, reject) {
-    mongodb.MongoClient.connect((process.env.MONGODB_URI || 'mongodb://localhost:27017/agate-db'), function (err, client) {
+    const path = process.env.MONGODB_URI? process.env.MONGODB_URI+'/agate-db':'mongodb://localhost:27017/agate-db';
+    mongodb.MongoClient.connect(path, function (err, client) {
         if (err) {
             reject(err);
         }

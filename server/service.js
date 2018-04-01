@@ -5,7 +5,7 @@ async function init(callback){
     accounts = db.collection("accounts");
     habbits = db.collection("habbits"); 
     //console.log(accounts);
-    //console.log(habbits); 
+    //console.log(habbits);
     callback();  
 }
 
