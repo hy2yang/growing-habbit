@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 2666;
 const service = require('./service.js');
-const idService = require('./mockIDService.js');
 
 app.use(bodyParser.json({ extended: true, type: '*/*' }) );
 app.use(express.static(path.resolve(__dirname, '../react-ui/build')) );
 
+/*
 app.post('/users',(req, res) => { 
     const info = idService.getID();
     service.newUser(info.currentId);
@@ -60,13 +60,6 @@ app.get('/prestored', (req, res) => {
 });
 
 
-/*
-app.delete('/prestored/:cardId', (req, res) => { 
-    service.deleteCard(req.params.cardId);
-    res.send('OK');
-});
-*/
-
 app.get('/users/:userId/custom', (req, res) => { 
     const currentId = req.get('currentId');
     res.send( JSON.stringify( cardListWithMark( service.getCustomCardIdsOf(req.params.userId), currentId ) ) );
@@ -97,14 +90,6 @@ app.delete('/users/:userId/custom/:cardId', (req, res) => {
     }    
 });
 
-/*
-app.get('/cards', (req, res) => { 
-    const currentId=req.get('currentId');
-    res.send( JSON.stringify( cardListWithFavMark( service.allCards, currentId ) ) );
-    res.send( JSON.stringify( service.allCards ));
-}); 
-*/
-
 app.get('/cards/:cardId', (req, res) => { 
     const currentId=req.get('currentId');
     res.send( JSON.stringify( getCardWithMark(req.params.cardId, currentId) ));
@@ -124,6 +109,7 @@ app.put('/cards/:cardId', (req, res) => {
     }
 });
 
+
 function getCardWithMark( cardId, userId ){
     const card = service.getCardById(cardId);
     card.infav = service.isInFavOf(cardId, userId);
@@ -136,7 +122,12 @@ function cardListWithMark( cardIdList, userId ){
     else return null;
 }
 
-app.listen(PORT, () => {  
-    console.log(`Server listening at http://localhost:${PORT}`);
-    console.log('use Ctrl-C to stop this server');
-});
+*/
+
+service.init(()=>{
+    app.listen(PORT, () => {  
+        console.log(`Server listening at http://localhost:${PORT}`);
+        console.log('use Ctrl-C to stop this server');
+    });
+})
+
