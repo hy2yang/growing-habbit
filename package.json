@@ -15,6 +15,7 @@
     "browserify": "^16.1.1",
     "express": "^4.16.3",
     "heroku-cli": "^6.15.35",
+    "jsonwebtoken": "^8.2.0",
     "mongodb": "^3.0.5"
   }
 }

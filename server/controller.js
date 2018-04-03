@@ -5,124 +5,83 @@ const app = express();
 const PORT = process.env.PORT || 2666;
 const service = require('./service.js');
 
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', '*');
+    next();
+});
+
+
 app.use(bodyParser.json({ extended: true, type: '*/*' }) );
 app.use(express.static(path.resolve(__dirname, '../react-ui/build')) );
 
-/*
-app.post('/users',(req, res) => { 
-    const info = idService.getID();
-    service.newUser(info.currentId);
-    res.send( JSON.stringify( info ));
+function handleRes(res, resp){
+    if (res.error) resp.status(500).send('db error, please try again later');
+    else if (res.alert) resp.status(400).send(res.alert);
+    else resp.send( JSON.stringify(res));
+}
+
+app.post('/login',(req, resp) => { 
+    const username = req.body.username;
+    const password = req.body.password;
+    const res = service.login(username, password);
+    handleRes(res,resp);
 });
 
-app.get('/users',(req, res) => {
-    const active = Array.from(idService.activeUsers);
-    const withCustomList = active.filter(userId => service.hasCustomList(userId));
-    res.send( JSON.stringify( { activeUsers : active, withCustomList : withCustomList} ));
+app.post('/users',(req, resp) => { 
+    const username = req.body.username;
+    const password = req.body.password;
+    const res = service.newUser(username, password);
+    handleRes(res,resp);
 });
 
-app.get('/users/:userId/fav', (req, res) => { 
-    const currentId=req.get('currentId');
-    if ( currentId !== req.params.userId){
-        res.status(403).send('you have no such permission on this list');
-    }
-    else{
-        res.send( JSON.stringify( cardListWithMark( service.getFavCardIdsOf(currentId), currentId ) ));
-    }
+app.put('/users',(req, resp) => { 
+    const username = req.body.username;
+    const password = req.body.password;
+    const res = service.changePw(username, password);
+    handleRes(res,resp);
 });
 
-app.post('/users/:userId/fav', (req, res) => {
-    const currentId=req.get('currentId');
-    if ( currentId !== req.params.userId){
-        res.status(403).send('you have no such permission on this list');
-    }
-    else{ 
-        service.addToFavOf(req.body.id, currentId);
-        res.send( JSON.stringify( cardListWithMark( service.getFavCardIdsOf(currentId), currentId ) ));
-    }
-});
-
-app.delete('/users/:userId/fav/:cardId', (req, res) => { 
-    const currentId=req.get('currentId');
-    if ( currentId !== req.params.userId){
-        res.status(403).send('you have no such permission on this list');
-    }
-    else {
-        service.removeFromFavOf(req.params.cardId, currentId);
-        res.send( JSON.stringify( cardListWithMark( service.getFavCardIdsOf(currentId), currentId ) ));
-    }    
+app.post('/users/logout',(req, resp) => { 
     
 });
 
-app.get('/prestored', (req, res) => { 
-    const currentId = req.get('currentId');    
-    res.send( JSON.stringify( cardListWithMark( service.getPrestoredCardIds(), currentId ) ) ); //
-});
-
-
-app.get('/users/:userId/custom', (req, res) => { 
-    const currentId = req.get('currentId');
-    res.send( JSON.stringify( cardListWithMark( service.getCustomCardIdsOf(req.params.userId), currentId ) ) );
-});
-
-app.post('/users/:userId/custom', (req, res) => {  
-    const currentId=req.get('currentId');  
+app.get('/users/:username/habits', (req, resp) => { 
+    const username = req.params.username;
+    /*
+    get all habits
+    const currentId;
     if ( currentId !== req.params.userId){
         res.status(403).send('you have no such permission on this list');
     }
-    else{ 
-        let i= req.body.side0;
-        let j= req.body.side1;
-        if ( !i || !j ) res.status(400).send("neither side can be null");
-        service.addCustomCardOf(i,j, currentId);
-        res.send( JSON.stringify( cardListWithMark( service.getCustomCardIdsOf(currentId), currentId ) ) );
-    }
-});
-
-app.delete('/users/:userId/custom/:cardId', (req, res) => { 
-    const currentId=req.get('currentId');
-    if (!service.ownsCard(currentId, req.params.cardId)){
-        res.status(403).send('you have no such permission on this card');
-    }
     else{
-        service.deleteCard(req.params.cardId, currentId);
-        res.send( JSON.stringify( cardListWithMark( service.getCustomCardIdsOf(currentId), currentId ) ) );
-    }    
-});
-
-app.get('/cards/:cardId', (req, res) => { 
-    const currentId=req.get('currentId');
-    res.send( JSON.stringify( getCardWithMark(req.params.cardId, currentId) ));
-});
-
-app.put('/cards/:cardId', (req, res) => { 
-    const currentId=req.get('currentId');
-    if (!service.ownsCard(currentId, req.params.cardId)){
-        res.status(403).send('you have no such permission on this card');
+        res.send( JSON.stringify( cardListWithMark( service.getFavCardIdsOf(currentId), currentId ) ));
     }
-    else{
-        let i= req.body.side0;
-        let j= req.body.side1;
-        if ( !i || !j ) res.status(400).send("neither side can be null");
-        service.updateCard(req.params.cardId, i, j );
-        res.send( JSON.stringify( getCardWithMark(req.params.cardId, currentId) ));
-    }
+    */
 });
 
+app.post('/users/:username/habits', (req, resp) => {
+    /*
+    add habit
+    */
+});
 
-function getCardWithMark( cardId, userId ){
-    const card = service.getCardById(cardId);
-    card.infav = service.isInFavOf(cardId, userId);
-    card.ownership = service.ownsCard(userId, cardId);
-    return card;
-}
+app.delete('/users/:username/habits/:habitId', (req, resp) => {
+    /*
+    delete habit
+    */
+});
 
-function cardListWithMark( cardIdList, userId ){
-    if (cardIdList) return cardIdList.map(cardId => getCardWithMark(cardId, userId) );
-    else return null;
-}
+app.put('/users/:username/habits/:habitId', (req, resp) => {
+    /*
+    update habit status
+    */
+});
 
-*/
+app.get('/habits',(req, resp) => {
+    const page = req.query.page;
+});
 
 service.init(()=>{
     app.listen(PORT, () => {  

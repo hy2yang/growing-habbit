@@ -1,36 +1,68 @@
+const hash = require('./hashService');
 let db, accounts, habbits;
 
-async function init(callback){    
+async function init(callback) {
     db = await require("./dbConnection");
     accounts = db.collection("accounts");
-    habbits = db.collection("habbits"); 
-    //console.log(accounts);
-    //console.log(habbits);
-    callback();  
+    habbits = db.collection("habbits");
+    callback();
 }
 
 
-function newUser(username, hashedPw) {
-    const profile = {
-        username: username,
-        password: hashedPw,
-        habits: []
-    };
-    accounts.insertOne(profile, (err, doc) => {        
-        if (err) {
-            throw err;            
-        } else {
-            return doc;
-        }
-    });
+async function newUser(username, password) {
+    const profile = { username: username };
+    try {
+        const res = await accounts.findOne(profile);
+        if (res) return { alert: 'username already in use' };
+        profile.password = hash.getHashed(password);
+        profile.habits = [];
+        const doc = await accounts.insertOne(profile);
+        return doc;
+    }
+    catch (e) {
+        handleError(e);
+        return { error: 'db connection error' };
+    }
 }
 
-function handleError(e){
+async function login(username, password) {
+    try {
+        const doc = await accounts.findOne({ username: username });
+        const hashed = hash.getHashed(password);
+        if (!doc.password || doc.password !== hashed) return { alert: 'username or password not correct' };
+        else return doc;
+    }  
+    catch (e) {
+        handleError(e);
+        return { error: 'db connection error' };
+    }    
+}
+
+async function changePw(username, newPw) {
+    const hashed = hash.getHashed(newPw);
+    try {
+        const res = await accounts.updateOne({ username: username }, {$set:{password:hashed}});
+        return res;
+    }  
+    catch (e) {
+        handleError(e);
+        return { error: 'db connection error' };
+    }    
+
+}
+
+function logout(){
+
+}
+
+
+
+function handleError(e) {
     console.log(e);
 }
 
 module.exports = {
     init: init,
-    newUser : newUser
+    newUser: newUser
 };
 
