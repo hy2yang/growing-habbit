@@ -16,8 +16,8 @@ async function newUser(username, password) {
         if (res) return { alert: 'username already in use' };
         profile.password = hash.getHashed(password);
         profile.habits = [];
-        const doc = await accounts.insertOne(profile);
-        return doc;
+        await accounts.insertOne(profile);
+        return { userCreated : true, userId : profile._id};
     }
     catch (e) {
         handleError(e);
@@ -29,8 +29,8 @@ async function login(username, password) {
     try {
         const doc = await accounts.findOne({ username: username });
         const hashed = hash.getHashed(password);
-        if (!doc.password || doc.password !== hashed) return { alert: 'username or password not correct' };
-        else return doc;
+        if (!doc || doc.password !== hashed) return { alert: 'username or password not correct' };
+        else return {login : 'success', userId : doc._id};
     }  
     catch (e) {
         handleError(e);
@@ -63,6 +63,7 @@ function handleError(e) {
 
 module.exports = {
     init: init,
-    newUser: newUser
+    newUser: newUser,
+    login : login
 };
 
