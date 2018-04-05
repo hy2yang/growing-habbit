@@ -1,13 +1,18 @@
 const hash = require('./hashService');
+const ObjectId = require('mongodb').ObjectID;
 let db, accounts, habbits;
 
 async function init(callback) {
-    db = await require("./dbConnection");
-    accounts = db.collection("accounts");
-    habbits = db.collection("habbits");
-    callback();
+    try {
+        db = await require("./dbConnection");
+        accounts = db.collection("accounts");
+        habbits = db.collection("habbits");
+        callback();
+    }
+    catch (e) {
+        return handleError(e);
+    }
 }
-
 
 async function newUser(username, password) {
     const profile = { username: username };
@@ -17,11 +22,10 @@ async function newUser(username, password) {
         profile.password = hash.getHashed(password);
         profile.habits = [];
         await accounts.insertOne(profile);
-        return { userCreated : true, userId : profile._id};
+        return { userCreated: true, userId: profile._id };
     }
     catch (e) {
-        handleError(e);
-        return { error: 'db connection error' };
+        return handleError(e);
     }
 }
 
@@ -30,40 +34,40 @@ async function login(username, password) {
         const doc = await accounts.findOne({ username: username });
         const hashed = hash.getHashed(password);
         if (!doc || doc.password !== hashed) return { alert: 'username or password not correct' };
-        else return {login : 'success', userId : doc._id};
-    }  
+        else return { loggedIn: true, username: username, userId: doc._id};
+    }
     catch (e) {
-        handleError(e);
-        return { error: 'db connection error' };
-    }    
+        return handleError(e);
+    }
 }
 
-async function changePw(username, newPw) {
+async function changePw(userId, username, newPw) {
     const hashed = hash.getHashed(newPw);
     try {
-        const res = await accounts.updateOne({ username: username }, {$set:{password:hashed}});
-        return res;
-    }  
+        const res = await accounts.updateOne(
+            {
+                $and: [ { _id : ObjectId(userId)}, {username: username} ]                
+            }
+            , { $set: { password: hashed } }            
+        );        
+        if (res.matchedCount === 1) return {pwUpdated : true, username: username };
+        else return { alert : 'you are unauthorized to modify other accounts'};
+    }
     catch (e) {
-        handleError(e);
-        return { error: 'db connection error' };
-    }    
+        return handleError(e);
+    }
 
 }
-
-function logout(){
-
-}
-
-
 
 function handleError(e) {
     console.log(e);
+    return { error: 'db connection error' };
 }
 
 module.exports = {
     init: init,
     newUser: newUser,
-    login : login
+    login: login,
+    changePw : changePw
 };
 

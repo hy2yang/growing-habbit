@@ -6,12 +6,12 @@ const whitelist = new Set();
 
 function generateToken(userId){
     const res = jwt.sign({userId : userId, timestamp: Date.now()}, KEY); 
-    whitelist.add(userId);   
+    whitelist.add(userId.toString());
     return res;
 }
 
-function isValid(userId){
-    return whitelist.has(userId);
+function isRevoked(userId){
+    return !whitelist.has(userId);
 }
 
 function invalidate(userId){
@@ -20,6 +20,6 @@ function invalidate(userId){
 
 module.exports ={
     generateToken : generateToken,
-    isValid : isValid,
+    isRevoked : isRevoked,
     invalidate : invalidate
 };
