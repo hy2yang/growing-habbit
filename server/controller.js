@@ -5,9 +5,7 @@ const jwt = require('express-jwt');
 const app = express();
 
 const PORT = require('./config').PORT_EXPRESS;
-const service = require('./service.js');
 const authService = require('./authService');
-
 
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -50,7 +48,7 @@ app.post('/users', (req, resp) => {
     const username = req.body.username;
     const password = req.body.password;
     // todo: check username and pw
-    service.newUser(username, password).then(res => {
+    accountService.newUser(username, password).then(res => {
         if (res.userCreated) delete res.userId;
         handleRes(res, resp);
     });
@@ -61,7 +59,7 @@ app.post('/login', (req, resp) => {
     const username = req.body.username;
     const password = req.body.password;
     // check (regex match is cheaper than db query)
-    service.login(username, password).then(res => {
+    accountService.login(username, password).then(res => {
         if (res.loggedIn) {
             res.token = authService.generateToken(res.userId);
             delete res.userId;
@@ -83,7 +81,7 @@ app.put('/users/:username/password', (req, resp) => {
     const userId = req.user.userId;
     const password = req.body.password;
     // check (regex match is cheaper than db query)
-    service.changePw(userId, username, password).then(res => handleRes(res, resp));
+    accountService.changePw(userId, username, password).then(res => handleRes(res, resp));
 });
 
 
@@ -91,12 +89,12 @@ app.get('/users/:username/habits', (req, resp) => {   // same user : get all, ot
     const userId = req.user.userId;
     const ownerName = req.params.username;
 
-    service.checkUser(ownerId, ownerName).then(isOwner => {        
+    accountService.checkUser(ownerId, ownerName).then(isOwner => {        
         if (!isOwner || isOwner.error) {
-            service.getHabitsOfUser(userId, false).then(res => handleRes(res, resp));
+            habitService.getHabitsOfUser(userId, false).then(res => handleRes(res, resp));
         }
         else {
-            service.getHabitsOfUser(userId, true).then(res => handleRes(res, resp));           
+            habitService.getHabitsOfUser(userId, true).then(res => handleRes(res, resp));           
         }
     });
     
@@ -107,14 +105,14 @@ app.post('/users/:username/habits', (req, resp) => {   // new habit, params in b
     const ownerId = req.user.userId;
     const ownerName = req.params.username;
 
-    service.checkUser(ownerId, ownerName).then(isOwner => {
+    accountService.checkUser(ownerId, ownerName).then(isOwner => {
         if (!isOwner || isOwner.error) {
             handleRes(isOwner, resp);
         }
         else {
             const params = Object.assign(req.body);
             params.ownerId = ownerId;
-            service.newHabit(params).then(res => handleRes(res, resp));
+            habitService.newHabit(params).then(res => handleRes(res, resp));
         }
     });
 });
@@ -124,12 +122,12 @@ app.delete('/users/:username/habits/:habitId', (req, resp) => {  // delete habit
     const userId = req.user.userId;
     const habitId = req.params.habitId;
 
-    service.checkOwner(userId, habitId).then(isOwner => {
+    habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
             handleRes(isOwner, resp);
         }
         else {
-            service.deleteHabit(req.params.habitId).then(res => handleRes(res, resp));
+            habitService.deleteHabit(req.params.habitId).then(res => handleRes(res, resp));
         }
     });
 });
@@ -138,12 +136,12 @@ app.delete('/users/:username/habits/:habitId', (req, resp) => {  // delete habit
 app.post('/users/:username/habits/:habitId', (req, resp) => {  // user habit checkin
     const userId = req.user.userId;
     const habitId = req.params.habitId;
-    service.checkOwner(userId, habitId).then(isOwner => {
+    habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
             handleRes(isOwner, resp);
         }
         else {
-            service.checkinHabit(req.params.habitId).then(res => handleRes(res, resp));
+            habitService.checkinHabit(req.params.habitId).then(res => handleRes(res, resp));
         }
     });
 });
@@ -152,12 +150,12 @@ app.post('/users/:username/habits/:habitId', (req, resp) => {  // user habit che
 app.post('/habits/:habitId/finished', (req, resp) => {
     const userId = req.user.userId;
     const habitId = req.params.habitId;
-    service.checkOwner(userId, habitId).then(isOwner => {
+    habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
             handleRes(isOwner, resp);
         }
         else {
-            service.finishHabit(req.params.habitId).then(res => handleRes(res, resp));
+            habitService.finishHabit(req.params.habitId).then(res => handleRes(res, resp));
         }
     });
 })
@@ -165,18 +163,20 @@ app.post('/habits/:habitId/finished', (req, resp) => {
 
 app.post('/habits/:habitId/cheers', (req, resp) => {
     const userId = req.user.userId;
-    service.cheerForHabit(req.params.habitId, userId).then(res => handleRes(res, resp));
+    habitService.cheerForHabit(req.params.habitId, userId).then(res => handleRes(res, resp));
 });
 
 
 app.get('/habits', (req, resp) => {
     const page = +req.query.page;
     const pageSize = +req.query.pageSize;
-    service.getHabitsFrontPage(page, pageSize).then(res => handleRes(res, resp));
+    habitService.getHabitsFrontPage(page, pageSize).then(res => handleRes(res, resp));
 });
 
 
 service.init(() => {
+    this.accountService = require('./accountService');
+    this.habitService =require('./habitService');
     app.listen(PORT, () => {
         console.log(`Server listening at http://localhost:${PORT}`);
         console.log('use Ctrl-C to stop this server');
