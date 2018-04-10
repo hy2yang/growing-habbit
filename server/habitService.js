@@ -1,4 +1,3 @@
-
 const handleDBError = require('./dbConnection').handleError;
 const ObjectId = require('mongodb').ObjectID;
 let habits;

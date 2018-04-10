@@ -41,8 +41,6 @@ function handleError(e) {
 
 module.exports = {
     init : init,
-    habits : habits,
-    accounts :accounts,
     handleError : handleError,
     getCollection : getCollection
 }

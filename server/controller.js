@@ -91,9 +91,9 @@ app.get('/users/:username/habits', (req, resp) => {   // same user : get all, ot
     const userId = req.user.userId;
     const ownerName = req.params.username;
 
-    accountService.checkUser(ownerId, ownerName).then(isOwner => {
+    accountService.checkUser(userId, ownerName).then(isOwner => {
         if (!isOwner || isOwner.error) {
-            habitService.getHabitsOfUser(userId, false).then(res => handleRes(res, resp));
+            habitService.getHabitsOfUser(userId, false).then(res => handleRes(res, resp)).catch(e=> console.log(e));
         }
         else {
             habitService.getHabitsOfUser(userId, true).then(res => handleRes(res, resp));
@@ -104,16 +104,16 @@ app.get('/users/:username/habits', (req, resp) => {   // same user : get all, ot
 
 
 app.post('/users/:username/habits', (req, resp) => {   // new habit, params in body: ownerId name descr shared
-    const ownerId = req.user.userId;
+    const userId = req.user.userId;
     const ownerName = req.params.username;
 
-    accountService.checkUser(ownerId, ownerName).then(isOwner => {
+    accountService.checkUser(userId, ownerName).then(isOwner => {
         if (!isOwner || isOwner.error) {
             handleRes(isOwner, resp);
         }
         else {
             const params = Object.assign(req.body);
-            params.ownerId = ownerId;
+            params.ownerId = userId;
             habitService.newHabit(params).then(res => handleRes(res, resp));
         }
     });
@@ -177,8 +177,8 @@ app.get('/habits', (req, resp) => {
 
 
 db.init(() => {    
-    db.getCollection('accounts').then(accounts => {accountService = require('./accountService').init(accounts)});
-    db.getCollection('accounts').then(habits => {habitService = require('./accountService').init(habits)});
+    db.getCollection('habits').then(habits => {habitService = require('./habitService').init(habits)});
+    db.getCollection('accounts').then(accounts => {accountService = require('./accountService').init(accounts)});    
     app.listen(PORT, () => {
         console.log(`Server listening at http://localhost:${PORT}`);
         console.log('use Ctrl-C to stop this server');
