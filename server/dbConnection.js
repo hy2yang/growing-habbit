@@ -17,12 +17,19 @@ async function init(callback) {
 
             });
         })
-        accounts = db.collection("accounts");
-        habits = db.collection("habbits");
         callback();
     }
     catch (e) {
         return handleError(e);
+    }
+}
+
+async function getCollection(name){
+    try{
+        return await db.collection(name);
+    }
+    catch(e){
+        handleError(e);
     }
 }
 
@@ -34,7 +41,8 @@ function handleError(e) {
 
 module.exports = {
     init : init,
-    accounts : accounts,
     habits : habits,
-    handleError : handleError
+    accounts :accounts,
+    handleError : handleError,
+    getCollection : getCollection
 }

@@ -1,5 +1,12 @@
-const habits = require('./dbConnection').habits;
+
 const handleDBError = require('./dbConnection').handleError;
+const ObjectId = require('mongodb').ObjectID;
+let habits;
+
+function init(collection){
+    habits = collection;
+    return this;
+}
 
 async function checkOwner(userId, habitId) {
     try {
@@ -22,7 +29,7 @@ async function deleteHabit(habitId) {
     }
 }
 
-async function newHabit(params) {
+async function newHabit(params) {  // ownerId, name, descr, shared
     const profile = getHabitObject(params);
     try {
         const doc = await habits.insertOne(profile);
@@ -118,7 +125,8 @@ async function cheerForHabit(habitId, userId) {
     }
 }
 
-module.exports = {    
+module.exports = {   
+    init : init,  
     checkOwner : checkOwner,
     getHabitsFrontPage: getHabitsFrontPage,
     getHabitsOfUser: getHabitsOfUser,

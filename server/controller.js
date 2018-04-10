@@ -6,6 +6,8 @@ const app = express();
 
 const PORT = require('./config').PORT_EXPRESS;
 const authService = require('./authService');
+const db = require('./dbConnection');
+let accountService, habitService;
 
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -89,15 +91,15 @@ app.get('/users/:username/habits', (req, resp) => {   // same user : get all, ot
     const userId = req.user.userId;
     const ownerName = req.params.username;
 
-    accountService.checkUser(ownerId, ownerName).then(isOwner => {        
+    accountService.checkUser(ownerId, ownerName).then(isOwner => {
         if (!isOwner || isOwner.error) {
             habitService.getHabitsOfUser(userId, false).then(res => handleRes(res, resp));
         }
         else {
-            habitService.getHabitsOfUser(userId, true).then(res => handleRes(res, resp));           
+            habitService.getHabitsOfUser(userId, true).then(res => handleRes(res, resp));
         }
     });
-    
+
 });
 
 
@@ -174,9 +176,9 @@ app.get('/habits', (req, resp) => {
 });
 
 
-service.init(() => {
-    this.accountService = require('./accountService');
-    this.habitService =require('./habitService');
+db.init(() => {    
+    db.getCollection('accounts').then(accounts => {accountService = require('./accountService').init(accounts)});
+    db.getCollection('accounts').then(habits => {habitService = require('./accountService').init(habits)});
     app.listen(PORT, () => {
         console.log(`Server listening at http://localhost:${PORT}`);
         console.log('use Ctrl-C to stop this server');

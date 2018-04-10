@@ -1,5 +1,12 @@
-const accounts = require('./dbConnection').accounts;
+const hash = require('./hashService');
 const handleDBError = require('./dbConnection').handleError;
+const ObjectId = require('mongodb').ObjectID;
+let accounts;
+
+function init(collection){
+    accounts = collection;
+    return this;
+}
 
 async function newUser(username, password) {
     const profile = { username: username };
@@ -37,7 +44,8 @@ async function changePw(userId, username, newPw) {
             }
             , { $set: { password: hashed } }
         );
-        if (res.matchedCount === 1) return { pwUpdated: true, username: username };
+        console.log(res);
+        if (res.value) return { pwUpdated: true, username: username };
         else return { alert: 'you are unauthorized to modify other accounts' };
     }
     catch (e) {
@@ -56,7 +64,8 @@ async function checkUser(userId, name) {
     }
 }
 
-module.exports = {    
+module.exports = {   
+    init : init, 
     newUser: newUser,
     login: login,
     changePw: changePw,
