@@ -14,7 +14,6 @@ async function newUser(username, password) {
         const res = await accounts.findOne(profile);
         if (res) return { alert: 'username already in use' };
         profile.password = hash.getHashed(password);
-        profile.habits = [];
         await accounts.insertOne(profile);
         return { userCreated: true, userId: profile._id };
     }
@@ -44,7 +43,6 @@ async function changePw(userId, username, newPw) {
             }
             , { $set: { password: hashed } }
         );
-        console.log(res);
         if (res.value) return { pwUpdated: true, username: username };
         else return { alert: 'you are unauthorized to modify other accounts' };
     }
@@ -58,6 +56,34 @@ async function checkUser(userId, name) {
         const doc = await accounts.findOne({ _id: ObjectId(userId) });
         if (!doc || doc.username !== name) return false;
         else return true;
+    }
+    catch (e) {
+        return handleDBError(e);
+    }
+}
+
+async function addHabitId(userId, habitId){
+    try {
+        const res = await accounts.findOneAndUpdate(
+            { _id: ObjectId(userId) },
+            { $push: {habits : habitId}}
+        );
+        if (res.lastErrorObject.updatedExisting) return true;
+        else return false;
+    }
+    catch (e) {
+        return handleDBError(e);
+    }
+}
+
+async function removeHabitId(userId, habitId){
+    try {
+        const res = await accounts.findOneAndUpdate(
+            { _id: ObjectId(userId) },
+            { $pull: {habits : habitId}}
+        );
+        if (res.lastErrorObject.updatedExisting) return true;
+        else return false;
     }
     catch (e) {
         return handleDBError(e);

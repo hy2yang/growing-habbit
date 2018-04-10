@@ -2,7 +2,7 @@ const handleDBError = require('./dbConnection').handleError;
 const ObjectId = require('mongodb').ObjectID;
 let habits;
 
-function init(collection){
+function init(collection) {
     habits = collection;
     return this;
 }
@@ -65,10 +65,10 @@ async function getHabitsFrontPage(page, pageSize) {
 }
 
 async function getHabitsOfUser(userId, getall) {  // only when getall is true will this return all habits of a user
-    const params = { _id: ObjectId(userId) };
-    if (getall !== true){
+    const params = { ownerId: ObjectId(userId).toString() };
+    if (getall !== true) {
         params.shared = true;
-    }    
+    }
     try {
         const doc = await habits.find(params).toArray();
         if (!doc) return { alert: 'no more records' };
@@ -124,14 +124,14 @@ async function cheerForHabit(habitId, userId) {
     }
 }
 
-module.exports = {   
-    init : init,  
-    checkOwner : checkOwner,
+module.exports = {
+    init: init,
+    checkOwner: checkOwner,
     getHabitsFrontPage: getHabitsFrontPage,
     getHabitsOfUser: getHabitsOfUser,
     newHabit: newHabit,
     deleteHabit: deleteHabit,
     finishHabit: finishHabit,
-    checkinHabit : checkinHabit,
-    cheerForHabit :cheerForHabit
+    checkinHabit: checkinHabit,
+    cheerForHabit: cheerForHabit
 };
