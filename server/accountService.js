@@ -51,11 +51,11 @@ async function changePw(userId, username, newPw) {
     }
 }
 
-async function checkUser(userId, name) {
+async function getUserIdByName(username){
     try {
-        const doc = await accounts.findOne({ _id: ObjectId(userId) });
-        if (!doc || doc.username !== name) return false;
-        else return true;
+        const doc = await accounts.findOne({ username: username });
+        if (!doc) return {alert : 'no matching user record'};        
+        else return doc._id.toString();
     }
     catch (e) {
         return handleDBError(e);
@@ -95,5 +95,5 @@ module.exports = {
     newUser: newUser,
     login: login,
     changePw: changePw,
-    checkUser: checkUser
+    getUserIdByName : getUserIdByName
 };

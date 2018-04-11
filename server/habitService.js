@@ -9,7 +9,7 @@ function init(collection) {
 
 async function checkOwner(userId, habitId) {
     try {
-        const doc = await habits.findOne({ _id: ObjectId(habitId) });
+        const doc = await habits.findOne({ _id: ObjectId(habitId) });        
         if (!doc || doc.ownerId !== userId) return false;
         else return true;
     }
@@ -47,7 +47,7 @@ function getHabitObject(params) {
         shared: params.shared,
         finished: false,
         height: 0,
-        checkin: Date.now(),
+        checkin: new Date(),
         cheers: []
     };
 }
@@ -56,7 +56,7 @@ async function getHabitsFrontPage(page, pageSize) {
     const skip = pageSize * page;
     try {
         const doc = await habits.find({ shared: { $eq: true } }).skip(skip).limit(pageSize).toArray();
-        if (!doc) return { alert: 'no more records' };
+        if (!doc || doc.length<1 ) return { alert: 'no more records' };
         else return doc;
     }
     catch (e) {
@@ -71,7 +71,7 @@ async function getHabitsOfUser(userId, getall) {  // only when getall is true wi
     }
     try {
         const doc = await habits.find(params).toArray();
-        if (!doc) return { alert: 'no more records' };
+        if (!doc || doc.length<1) return { alert: 'no more records' };
         else return doc;
     }
     catch (e) {
@@ -80,20 +80,31 @@ async function getHabitsOfUser(userId, getall) {  // only when getall is true wi
 }
 
 async function checkinHabit(habitId) {
+    const timeNow = new Date();
     try {
-        const res = await habits.findOneAndUpdate(   // ++height, update timestamp
-            { _id: ObjectId(habitId) },
-            {
-                $currentDate: { checkin: true },
-                $inc: { height: 1 }
-            },
-            { returnOriginal: flase }
-        );
-        return res;
+        const old = await habits.findOne({ _id: ObjectId(habitId)});
+        if (sameDay(timeNow, old.checkin)) return { alert: 'you have checked in for this habit today' };
+        else {
+            const res = await habits.findOneAndUpdate(   // ++height, update timestamp
+                { _id: ObjectId(habitId) },
+                {
+                    $set: { checkin: timeNow },
+                    $inc: { height: 1 }
+                },
+                { returnOriginal: false }
+            );
+            return res.value;
+        }
     }
     catch (e) {
         return handleDBError(e);
     }
+}
+
+function sameDay(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
 }
 
 async function finishHabit(habitId) {
@@ -101,9 +112,9 @@ async function finishHabit(habitId) {
         const res = await habits.findOneAndUpdate(
             { _id: ObjectId(habitId) },
             { $set: { finished: true } },
-            { returnOriginal: flase }
+            { returnOriginal: false }
         );
-        return res;
+        return res.value;
     }
     catch (e) {
         return handleDBError(e);
@@ -115,9 +126,9 @@ async function cheerForHabit(habitId, userId) {
         const res = await habits.findOneAndUpdate(
             { _id: ObjectId(habitId) },
             { $addToSet: { cheers: userId } },
-            { returnOriginal: flase }
+            { returnOriginal: false }
         );
-        return res;
+        return res.value;
     }
     catch (e) {
         return handleDBError(e);

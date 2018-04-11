@@ -91,41 +91,38 @@ app.get('/users/:username/habits', (req, resp) => {   // same user : get all, ot
     const userId = req.user.userId;
     const ownerName = req.params.username;
 
-    accountService.checkUser(userId, ownerName).then(isOwner => {
-        if (!isOwner || isOwner.error) {
-            habitService.getHabitsOfUser(userId, false).then(res => handleRes(res, resp)).catch(e => console.log(e));
-        }
-        else {
-            habitService.getHabitsOfUser(userId, true).then(res => handleRes(res, resp));
+    accountService.getUserIdByName(ownerName).then(ownerId =>{
+        if (ownerId === userId){
+            habitService.getHabitsOfUser(ownerId, true).then(res => handleRes(res, resp));
+        } else{
+            habitService.getHabitsOfUser(ownerId, false).then(res => handleRes(res, resp));
         }
     });
-
 });
 
 app.post('/users/:username/habits', (req, resp) => {   // new habit, params in body: name descr shared
     const userId = req.user.userId;
     const ownerName = req.params.username;
 
-    accountService.checkUser(userId, ownerName).then(isOwner => {
-        if (!isOwner || isOwner.error) {
-            handleRes(isOwner, resp);
-        }
-        else {
+    accountService.getUserIdByName(ownerName).then(ownerId =>{
+        if (ownerId === userId){
             const params = Object.assign(req.body);
             params.ownerId = userId;
             habitService.newHabit(params).then(res => handleRes(res, resp));
+        } else{
+            handleRes({alert : 'you have no permission'}, resp);
         }
     });
 });
 
 
-app.delete('/users/:username/habits/:habitId', (req, resp) => {  // delete habit
+app.delete('/habits/:habitId', (req, resp) => {  // delete habit
     const userId = req.user.userId;
     const habitId = req.params.habitId;
 
     habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
-            handleRes(isOwner, resp);
+            handleRes( {alert : 'you have no permission'} , resp);
         }
         else {
             habitService.deleteHabit(req.params.habitId).then(res => handleRes(res, resp));
@@ -134,12 +131,12 @@ app.delete('/users/:username/habits/:habitId', (req, resp) => {  // delete habit
 });
 
 
-app.post('/users/:username/habits/:habitId', (req, resp) => {  // user habit checkin
+app.post('/habits/:habitId', (req, resp) => {  // user habit checkin
     const userId = req.user.userId;
     const habitId = req.params.habitId;
     habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
-            handleRes(isOwner, resp);
+            handleRes( {alert : 'you have no permission'} , resp);
         }
         else {
             habitService.checkinHabit(req.params.habitId).then(res => handleRes(res, resp));
@@ -153,10 +150,13 @@ app.post('/habits/:habitId/finished', (req, resp) => {
     const habitId = req.params.habitId;
     habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
-            handleRes(isOwner, resp);
+            handleRes({alert : 'you have no permission'}, resp);
         }
         else {
-            habitService.finishHabit(req.params.habitId).then(res => handleRes(res, resp));
+            habitService.finishHabit(req.params.habitId).then(res =>{
+                console.log(res);
+                handleRes(res, resp);
+            } );
         }
     });
 })
@@ -181,6 +181,9 @@ db.init(() => {
     app.listen(PORT, () => {
         console.log(`Server listening at http://localhost:${PORT}`);
         console.log('use Ctrl-C to stop this server');
+    });
+    process.on('unhandledRejection', (reason, p) => {
+        console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     });
 })
 
