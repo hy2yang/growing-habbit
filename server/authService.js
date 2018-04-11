@@ -5,17 +5,18 @@ const KEY = require('./config').JWT_SECRET;
 const active = new Set();
 
 function generateToken(userId){
-    const res = jwt.sign({userId : userId, timestamp: Date.now()}, KEY); 
-    active.add(userId.toString());
+    const payload = {userId : userId, timestamp: new Date()};
+    const res = jwt.sign(payload, KEY); 
+    active.add(payload.toString());
     return res;
 }
 
-function isRevoked(userId){
-    return !active.has(userId);
+function isRevoked(payload){
+    return !active.has(payload);
 }
 
-function invalidate(userId){
-    active.delete(userId);
+function invalidate(payload){
+    active.delete(payload);
 }
 
 module.exports ={

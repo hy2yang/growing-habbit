@@ -20,8 +20,7 @@ app.use(function (req, res, next) {
 app.use(jwt({
     secret: require('./config').JWT_SECRET,
     isRevoked: (req, payload, done) => {
-        const userId = payload.userId;
-        done(null, authService.isRevoked(userId));
+        done(null, authService.isRevoked(payload.toString()));
     }
 }).unless({ path: require('./config').ACCESSIBLE })
 );
@@ -72,8 +71,7 @@ app.post('/login', (req, resp) => {
 
 
 app.post('/logout', (req, resp) => {
-    const userId = req.user.userId;
-    authService.invalidate(userId);
+    authService.invalidate(req.user.toString());
     resp.send(JSON.stringify({ message: 'logout success' }));
 });
 
