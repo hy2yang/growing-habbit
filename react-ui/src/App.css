@@ -62,6 +62,7 @@
 	align-items: center;
 	opacity: 0.9;
 	background-color:ghostwhite;
+	z-index: 2147483647;
 }
 
 #loading >.img{
