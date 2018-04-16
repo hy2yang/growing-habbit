@@ -1,6 +1,6 @@
 
 function requestUserId() {
-    return fetchJsonFrom('/users','post', null).then(json => {
+    return fetchJsonFrom('/users', 'post', null).then(json => {
         return json.currentId;
     }).catch((error) => {
         if (error.toString().startsWith('error-')) {
@@ -11,7 +11,7 @@ function requestUserId() {
 }
 
 function getUserList() {
-    return fetchJsonFrom('/users','get', null).then(json => {
+    return fetchJsonFrom('/users', 'get', null).then(json => {
         return json;
     }).catch((error) => {
         if (error.toString().startsWith('error-')) {
@@ -21,18 +21,20 @@ function getUserList() {
     });
 }
 
-function fetchJsonFrom(url, method, currentId) {
+function fetchJsonFrom(url, method, jwtToken, body) {
     return fetch(url, {
         method: method,
-        headers: {currentId : currentId}
-    }).then(response => {
-        if (response.ok) return response.json();
-        return Promise.reject('error-response-not-okay');
+        headers: {  'content-type': 'application/json', 'Authentication': 'Bearer ' + jwtToken },
+        body : JSON.stringify(body)
+    }).then(response => response.json()).then(json => Promise.resolve(json))
+    .catch((error) => {
+        if (error.toString().startsWith('error-')) {
+            return Promise.reject(error);
+        }
+        return Promise.reject('error-response-json-bad');
     });
 }
 
 module.exports = {
-    requestUserId : requestUserId,
-    getUserList : getUserList,
-    fetchJsonFrom : fetchJsonFrom
+    fetchJsonFrom: fetchJsonFrom
 }
