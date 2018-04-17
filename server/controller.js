@@ -42,7 +42,7 @@ app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 function handleRes(res, resp) {
     if (res.error) resp.status(500);
     else if (res.alert) resp.status(400);
-    resp.send(JSON.stringify(res));
+    resp.send(res);
 }
 
 app.post('/users', (req, resp) => {

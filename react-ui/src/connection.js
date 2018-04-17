@@ -31,7 +31,7 @@ function fetchJsonFrom(url, method, jwtToken, body) {
         if (error.toString().startsWith('error-')) {
             return Promise.reject(error);
         }
-        return Promise.reject('error-response-json-bad');
+        return Promise.reject('error-fail-to-connect-to-service');
     });
 }
 
