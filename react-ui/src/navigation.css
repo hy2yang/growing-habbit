@@ -1,0 +1,12 @@
+
+.navigation > .ant-menu-horizontal {
+	line-height: 39px;
+}
+
+.navigation > .ant-menu-horizontal > li:last-child{
+	float:right;
+}
+
+nobr {
+    margin-right: 15px;
+}

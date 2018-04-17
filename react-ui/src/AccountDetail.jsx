@@ -5,12 +5,12 @@ import 'antd/lib/button/style/css';
 class AccountDetail extends Component {
 
     render() {
+
         return (
-            <div>
-                {JSON.stringify(this.props.user)}
-                <Button onClick= {()=>this.props.logoutSubmit()}> logout </Button>
+            <div className='account'>   
+                <nobr>Logged in as : {this.props.user.username} </nobr>       
+                <Button icon='poweroff' onClick= {()=>this.props.logoutSubmit()}> logout </Button>
             </div>
-            
         )
     }
 }

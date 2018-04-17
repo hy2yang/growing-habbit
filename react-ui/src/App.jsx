@@ -3,6 +3,7 @@ import './App.css';
 import Alert from './Alert';
 import Login from './Login';
 import AccountDetail from './AccountDetail';
+import Navigation from './Navigation';
 const connection = require('./connection');
 
 
@@ -21,9 +22,9 @@ class App extends Component {
   render() {
 
     const loading = require('./loading.gif');
-    const accountPanel = ()=>{
+    const accountPanel = () => {
       if (this.state.user) {
-        return (<AccountDetail user={this.state.user} logoutSubmit = {() => this.logoutSubmit()}/>)
+        return (<AccountDetail user={this.state.user} logoutSubmit={() => this.logoutSubmit()} />)
       }
       else return (<Login loginSubmit={(body) => this.loginSubmit(body)} />);
     }
@@ -31,8 +32,9 @@ class App extends Component {
     return (
       <div className='App'>
         <div className='hidden' id='loading'><p className='img'><img src={loading} alt="loading gif" /></p></div>
-        {accountPanel()}
-
+        <div className='header'>
+          <Navigation user={this.state.user} accountPanel={accountPanel()}/>          
+        </div>
         <Alert message='custom alert message' onClick={() => this.hideElement('.alert')} />
 
       </div>
@@ -42,21 +44,21 @@ class App extends Component {
 
   loginSubmit(body) {
     connection.fetchJsonFrom('./login', 'post', null, body)
-    .then(res => {
-      if (!res.error && !res.alert) {
-        this.setState({ user: res }, () => console.log(this.state))
-      }
-    });
+      .then(res => {
+        if (!res.error && !res.alert) {
+          this.setState({ user: res }//, () => console.log(this.state))
+          )}
+      });
   }
 
-  logoutSubmit(){
-    console.log('click on logout');
+  logoutSubmit() {
+    //console.log('click on logout');
     connection.fetchJsonFrom('./logout', 'post', this.state.user.token, null)
-    .then(res => {
-      if (!res.error && !res.alert) {
-        this.setState({ user: null }, () => console.log(this.state))
-      }
-    });
+      .then(res => {
+        if (!res.error && !res.alert) {
+          this.setState({ user: null });
+        }
+      });
   }
 
   setStudyList(list) {
