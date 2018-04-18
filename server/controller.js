@@ -29,7 +29,7 @@ app.use(jwt({
 app.use(function (err, req, res, next) {
     if (err) {
         //console.log(err);
-        res.status(401).send(JSON.stringify({ message: 'invalid jwt token' }));
+        res.status(401).send(JSON.stringify({ alert: 'invalid jwt token' }));
     }
 });
 

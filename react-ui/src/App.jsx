@@ -6,22 +6,20 @@ import AccountDetail from './AccountDetail';
 import Navigation from './Navigation';
 import BrowsePanel from './BrowsePanel';
 
-const connection = require('./connection');
+import connection from './connection';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      userId : null,
       username : null,
-      jwtToken: null,
       error : null,
       alert : null,
-      datasource : '/habits',
+      datasource : null,
       habits :[]
     };
-    this.fetchHabits();
+    this.setDatasource('/habits');
   }
 
   componentDidMount() {
@@ -68,7 +66,7 @@ class App extends Component {
   }
 
   fetchHabits(){
-    connection.fetchJsonFrom(this.state.datasource, 'get', this.state.jwtToken ,null)
+    connection.fetchJsonFrom(this.state.datasource, 'get', this.jwtToken ,null)
       .then(res => {
         if (!res.error && !res.alert) {
           this.setState({habits : res})
@@ -82,8 +80,23 @@ class App extends Component {
       });
   }
 
-  setDatasource(path){    
-    this.setState({datasource : path});
+
+  setDatasource(path){ 
+    connection.fetchJsonFrom(path, 'get', this.jwtToken ,null)
+      .then(res => {
+        if (!res.error && !res.alert) {
+          this.setState({
+            habits : res,
+            datasource : path
+          })
+        }
+        else {
+          this.handleException(res);
+        };
+      })
+      .catch(e=>{
+        this.handleException({error : e});
+      });
   }
 
   loginSubmit(body) {
@@ -91,11 +104,11 @@ class App extends Component {
     connection.fetchJsonFrom('./login', 'post', null, body)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({ 
-            userId : res.userId,
-            username : res.username,
-            jwtToken : res.token
-          }, () => this.hideElement('#loading'))
+          this.setState({username : res.username}, () => {
+            this.userId = res.userId;
+            this.jwtToken = res.token;
+            this.hideElement('#loading');
+          })
         }
         else {
           this.handleException(res);
@@ -110,14 +123,14 @@ class App extends Component {
 
   logoutSubmit() {
     this.showElement('#loading');
-    connection.fetchJsonFrom('./logout', 'post', this.state.jwtToken, null)
+    connection.fetchJsonFrom('./logout', 'post', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({ 
-            userId : null,
-            username : null,
-            jwtToken : null
-           }, () => this.hideElement('#loading'));
+          this.setState({username : null}, () => {
+            delete this.userId;
+            delete this.jwtToken;
+            this.hideElement('#loading');            
+          });
         }
         else {
           this.handleException(res);
