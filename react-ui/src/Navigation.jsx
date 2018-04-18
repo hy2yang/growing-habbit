@@ -11,22 +11,24 @@ class Navigation extends Component {
         super(props);
         this.state = {
             username: null,
-            current: null
+            current: 'shared'
         };
     }
 
     handleClick = (e) => {
-        this.setState({
-            current: e.key,
-        });
+        this.setState({current: e.key}, ()=>{           
+            if (e.key!=='account'){
+                const path = (this.state.username && this.state.current==='mine')? `/users/${this.state.username}/habits`:'/habits';
+                this.props.setDatasource(path);
+            }
+            this.props.clearBanner();
+        });        
     }
 
     componentWillReceiveProps(nextProps){ 
         this.setState({
-            username: nextProps.user? nextProps.user.username:null,
-            current : nextProps.user? 'mine':null
-        });
-        
+            username: nextProps.username? nextProps.username:null
+        });        
     }
 
     render() {
@@ -48,6 +50,5 @@ class Navigation extends Component {
         )
     }
 }
-
 
 export default Navigation;

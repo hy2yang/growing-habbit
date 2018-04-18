@@ -63,7 +63,6 @@ app.post('/login', (req, resp) => {
     accountService.login(username, password).then(res => {
         if (res.loggedIn) {
             res.token = authService.generateToken(res.userId);
-            delete res.userId;
         }
         handleRes(res, resp);
     });
