@@ -3,8 +3,8 @@ module.exports = {
     PORT_EXPRESS : process.env.PORT || 2666,
     JWT_SECRET: 'growing-habbit',
     REGEX : {
-        USERNAME : /^(?=.{5,20}$)[A-Za-z0-9]+(?:[_.][A-Za-z0-9]+)*$/, // 4-20, a-zA-Z0-9._, no._start or end, no consecutive ._
-        PW : /^(?=.*[A-Za-z])(?=.*0-9)[A-Za-z0-9]{4,20}$/  // 4-20 a-zA-Z0-9 one letter one number
+        USERNAME : /^(?=.{4,20}$)[A-Za-z0-9]+(?:[_.][A-Za-z0-9]+)*$/, // 4-20, a-zA-Z0-9._, no._start or end, no consecutive ._
+        PW : /.*[A-Za-z0-9]{4,20}$/   
     },
     ACCESSIBLE : [
         '/login',

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class BrowserPanel extends Component {
     render() {
-        console.log(this.props.array);
+        //console.log(this.props.array);
         const all = this.props.array.map(item => {
             return (<li key={Math.random()}>{JSON.stringify(item)}</li>)
         })

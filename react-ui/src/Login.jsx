@@ -7,6 +7,8 @@ import 'antd/lib/input/style/css';
 import Button from 'antd/lib/button';
 import 'antd/lib/button/style/css';
 
+import RegisterModal from './RegisterModal';
+
 import React, { Component } from 'react';
 
 const FormItem = Form.Item;
@@ -17,6 +19,20 @@ function hasErrors(fieldsError) {
 }
 
 class HorizontalLoginForm extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            registerModalVisible : false
+        };
+    }
+
+    showRegisterModal(){
+        this.setState({ registerModalVisible: true });
+    }
+
+    hideRegisterModal(){
+        this.setState({ registerModalVisible: false });
+    }
 
     componentDidMount() {
         this.props.form.validateFields();
@@ -56,8 +72,16 @@ class HorizontalLoginForm extends Component {
                     <FormItem>
                         <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())} >
                             Log in
-                        </Button>
-                    </FormItem>
+                        </Button>                        
+                    </FormItem> 
+                    <FormItem>
+                        <RegisterModal 
+                        showRegisterModal = {this.showRegisterModal.bind(this)} 
+                        hideRegisterModal = {this.hideRegisterModal.bind(this)} 
+                        registerModalVisible = {this.state.registerModalVisible}
+                        registerSubmit = {this.props.registerSubmit}
+                        />
+                    </FormItem>                 
                 </Form>
             </div>
         );

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import AlertBanners from './AlertBanners';
+import AlertBanner from './AlertBanner';
 import Login from './Login';
 import AccountDetail from './AccountDetail';
 import Navigation from './Navigation';
@@ -14,12 +14,13 @@ class App extends Component {
     super(props);
     this.state = {
       username : null,
+      info : null,
       error : null,
-      alert : null,
+      warning : null,
       datasource : null,
       habits :[]
     };
-    this.setDatasource('/habits');
+    this.updateHabitDisplay('/habits');
   }
 
   componentDidMount() {
@@ -32,20 +33,26 @@ class App extends Component {
       if (this.state.username) {
         return (<AccountDetail username={this.state.username} logoutSubmit={() => this.logoutSubmit()} />)
       }
-      else return (<Login loginSubmit={(body) => this.loginSubmit(body)} />);
+      else return (<Login loginSubmit={(body) => this.loginSubmit(body)} registerSubmit={(body)=>this.registerNewAccount(body)}/>);
     }
 
     return (
       <div className='App'>
-        {AlertBanners(this.state.alert, this.state.error, this.onCloseAlert.bind(this), this.onCloseError.bind(this))}        
-        <div className='hidden' id='loading'><p className='img'><img src={loading} alt="loading gif" /></p></div>
-        <div className='header'>
-          <Navigation username={this.state.username} accountPanel={accountPanel()} setDatasource={this.setDatasource.bind(this)} 
-          clearBanner={()=>{
-            this.onCloseAlert();
-            this.onCloseError();
-            }}/>
+        <div className='banners'>
+          <AlertBanner message={this.state.info} type={'info'} />
+          <AlertBanner message={this.state.warning} type={'warning'} />
+          <AlertBanner message={this.state.error} type={'error'} />
         </div>
+        <div className='hidden' id='loading'><p className='img'><img src={loading} alt="loading gif" /></p></div>
+
+        <Navigation username={this.state.username} accountPanel={accountPanel()} updateHabitDisplay={this.updateHabitDisplay.bind(this)} 
+          clearBanner={()=>{
+            this.closeBanner('info');
+            this.closeBanner('warning');
+            this.closeBanner('error');
+            }}
+        />
+
         <BrowsePanel array={this.state.habits}/>
 
       </div>
@@ -53,42 +60,41 @@ class App extends Component {
 
   }
 
-  onCloseError(){
-    this.setState({error : null} , ()=>this.hideElement('.errorBanner'));
-  }
-
-  onCloseAlert(){
-    this.setState({alert : null} , ()=>this.hideElement('.alertBanner'));
+  closeBanner(type){
+    this.setState({ [type] : null} );
   }
 
   handleException(res){
-    this.setState({error : res.error, alert : res.alert});
+    this.setState({error : res.error, warning : res.alert});
   }
 
-  fetchHabits(){
-    connection.fetchJsonFrom(this.state.datasource, 'get', this.jwtToken ,null)
+  registerNewAccount(body){
+    this.showElement('#loading');
+    connection.fetchJsonFrom('/users', 'post', null ,body)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({habits : res})
+          this.setState({ info :'You have created your account! You can login now' });
+          this.hideElement('#loading');
         }
         else {
           this.handleException(res);
+          this.hideElement('#loading');
         };
       })
       .catch(e=>{
         this.handleException({error : e});
-      });
+        this.hideElement('#loading');
+    });
   }
 
-
-  setDatasource(path){ 
+  updateHabitDisplay(path){ 
     connection.fetchJsonFrom(path, 'get', this.jwtToken ,null)
       .then(res => {
         if (!res.error && !res.alert) {
           this.setState({
             habits : res,
             datasource : path
-          })
+          });          
         }
         else {
           this.handleException(res);
@@ -104,7 +110,7 @@ class App extends Component {
     connection.fetchJsonFrom('./login', 'post', null, body)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({username : res.username}, () => {
+          this.setState({username : res.username , info :'login success'}, () => {
             this.userId = res.userId;
             this.jwtToken = res.token;
             this.hideElement('#loading');
@@ -123,13 +129,14 @@ class App extends Component {
 
   logoutSubmit() {
     this.showElement('#loading');
+    this.updateHabitDisplay('/habits');
     connection.fetchJsonFrom('./logout', 'post', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({username : null}, () => {
+          this.setState({username : null, datasource : '/habits', info :'logout success'}, () => {
             delete this.userId;
-            delete this.jwtToken;
-            this.hideElement('#loading');            
+            delete this.jwtToken;            
+            this.hideElement('#loading');      
           });
         }
         else {
