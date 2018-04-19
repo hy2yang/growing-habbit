@@ -33,7 +33,7 @@ class App extends Component {
       if (this.state.username) {
         return (<AccountDetail username={this.state.username} logoutSubmit={() => this.logoutSubmit()} />)
       }
-      else return (<Login loginSubmit={(body) => this.loginSubmit(body)} registerSubmit={(body)=>this.registerNewAccount(body)}/>);
+      else return (<Login loginSubmit={this.loginSubmit.bind(this)} registerSubmit={this.registerNewAccount.bind(this)}/>);
     }
 
     return (
@@ -45,7 +45,11 @@ class App extends Component {
         </div>
         <div className='hidden' id='loading'><p className='img'><img src={loading} alt="loading gif" /></p></div>
 
-        <Navigation username={this.state.username} accountPanel={accountPanel()} updateHabitDisplay={this.updateHabitDisplay.bind(this)} 
+        <Navigation 
+          username={this.state.username} 
+          accountPanel={accountPanel()} 
+          updateHabitDisplay={this.updateHabitDisplay.bind(this)} 
+          createHabit = {this.createHabit.bind(this)}
           clearBanner={()=>{
             this.closeBanner('info');
             this.closeBanner('warning');
@@ -66,6 +70,10 @@ class App extends Component {
 
   handleException(res){
     this.setState({error : res.error, warning : res.alert});
+  }
+
+  createHabit(body){
+    console.log('App.jsx createHabit called with ', body);
   }
 
   registerNewAccount(body){

@@ -4,6 +4,7 @@ import 'antd/lib/icon/style/css';
 import Menu from 'antd/lib/menu';
 import 'antd/lib/menu/style/css';
 import './navigation.css';
+import AddHabitModal from './AddHabitModal';
 
 import connection from './connection';
 
@@ -13,7 +14,8 @@ class Navigation extends Component {
         super(props);
         this.state = {
             username: null,
-            current: null
+            current: null,
+            addModalVisible : false
         };
     }
 
@@ -26,9 +28,10 @@ class Navigation extends Component {
     handleClick = (e) => {   
         if (e.key === 'account' || e.key ==='new') {
             this.props.clearBanner();   
-            if (e.key==='new'){
-                const path =`/users/${this.state.username}/habits`;
-                this.createHabit;
+            if (e.key==='new' && !this.state.addModalVisible){
+                
+                //const path =`/users/${this.state.username}/habits`;
+                this.showAddModal();
             }
         }  
         else this.setState({ current: e.key }, () => {
@@ -40,8 +43,12 @@ class Navigation extends Component {
         });
     }
 
-    createHabit(){
+    showAddModal(){
+        this.setState({ addModalVisible: true });
+    }
 
+    hideAddModal(){
+        this.setState({ addModalVisible: false });
     }
 
     render() {
@@ -55,8 +62,14 @@ class Navigation extends Component {
                     <Menu.Item key='mine' disabled={!hasUser}>
                         <Icon type='user' />Mine
                     </Menu.Item>
-                    <Menu.Item key='new' disabled={!hasUser}> 
+                    <Menu.Item key='new' disabled={!hasUser}>                         
                         <Icon type='plus-circle-o' /> New habit
+                        <AddHabitModal 
+                        showAddModal = {this.showAddModal.bind(this)} 
+                        hideAddModal = {this.hideAddModal.bind(this)} 
+                        addModalVisible = {this.state.addModalVisible}
+                        createHabit = {this.props.createHabit}
+                        />
                     </Menu.Item>
                     <Menu.Item key='account'>
                         {this.props.accountPanel}
