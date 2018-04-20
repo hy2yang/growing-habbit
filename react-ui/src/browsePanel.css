@@ -1,15 +1,26 @@
 .browse{
-    height: 90vh;
-    padding: 20px 5px 20px 5px ;
+    height: 87vh;
+    padding: 10px 5px 10px 5px ;
     display: grid;
     grid-template-columns: 49.8% 49.8%;
     grid-column-gap : 0.4%;
-    grid-template-rows : repeat(4, 25%);
-    grid-row-gap : 1%;
+    grid-template-rows : repeat(4, 24%);
+    grid-row-gap : 1.33%;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 .habitCard {
     display: inline-block;
     text-align : center;
     align-content: center;
+}
+
+.ant-card {
+    display: flex;
+    flex-direction: column;
+    height : 100%;
+}
+
+.ant-card-body{
+    flex:auto;
 }

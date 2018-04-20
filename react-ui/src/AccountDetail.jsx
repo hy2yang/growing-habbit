@@ -9,7 +9,7 @@ class AccountDetail extends Component {
         return (
             <div className='account'>   
                 <nobr>Logged in as : {this.props.username} </nobr>       
-                <Button icon='poweroff' onClick= {()=>this.props.logoutSubmit()}> logout </Button>
+                <Button type='danger' icon='poweroff' onClick= {()=>this.props.logoutSubmit()}> logout </Button>
             </div>
         )
     }

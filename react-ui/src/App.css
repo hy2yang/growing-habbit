@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  display: grid;
+  grid-auto-rows: auto;
 }
 
 #loading{
@@ -18,3 +20,10 @@
 	padding-top: 25%;
 }
 
+.navigation{
+	height: 41px;
+}
+
+.pagination{
+	padding-top: 2px;
+}

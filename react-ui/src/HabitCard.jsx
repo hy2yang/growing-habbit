@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Icon, Card } from 'antd';
-import 'antd/lib/icon/style/css';
+import { Card, Button } from 'antd';
 import 'antd/lib/card/style/css';
+import 'antd/lib/button/style/css';
 
-const connection = require('./connection');
+const ButtonGroup = Button.Group;
+
 const { Meta } = Card;
 
 class HabitCard extends Component {
@@ -22,12 +23,11 @@ class HabitCard extends Component {
         }
     }
 
-    getActionButton(type, text, onClick) {
+    getActionButton(type, text, disabled, onClick) {
         return (
-            <div onClick={onClick} >
-                <Icon type={type} />
-                <div>{text}</div>
-            </div>
+            <Button disabled={disabled} onClick={onClick} icon={type} >
+                {text}
+            </Button>
         );
     }
 
@@ -38,29 +38,24 @@ class HabitCard extends Component {
     }
 
     render() {
-        const cheer = this.state.cheered ? this.getActionButton('like', 'cheer', this.onClickCheer.bind(this)) : this.getActionButton('like-o', 'cheer', this.onClickCheer.bind(this));
-        const checkIn = this.state.checkedIn ? this.getActionButton('check', 'checkin', this.onClickCheckin.bind(this)) : this.getActionButton('play-circle-o', 'checkin', this.onClickCheckin.bind(this));
-        const finish = this.state.finished ? this.getActionButton('tags-o', 'finish', this.onClickFinish.bind(this)) : this.getActionButton('tags', 'finish', this.onClickFinish.bind(this));
-        const deleteHabit = this.getActionButton('delete', 'delete', this.onClickDelete.bind(this));
+        const cheer = this.state.cheered ? this.getActionButton('like', 'cheer', false, this.onClickCheer.bind(this)) : this.getActionButton('like-o', 'cheer', false, this.onClickCheer.bind(this));
+        const checkIn = this.state.checkedIn ? this.getActionButton('check', 'checkin', false, this.onClickCheckin.bind(this)) : this.getActionButton('play-circle-o', 'checkin', false, this.onClickCheckin.bind(this));
+        const finish = this.state.finished ? this.getActionButton('tags-o', 'finish', false, this.onClickFinish.bind(this)) : this.getActionButton('tags', 'finish', false, this.onClickFinish.bind(this));
+        const deleteHabit = this.getActionButton('delete', 'delete', false, this.onClickDelete.bind(this));
 
         return (
-            <Card hoverable actions={[cheer, checkIn, finish, deleteHabit]} >
+            <Card hoverable actions={[
+                <ButtonGroup>
+                    {cheer}
+                    {checkIn}
+                    {finish}
+                    {deleteHabit}
+                </ButtonGroup>
+            ]} >
                 <Meta title={this.state.name} description={this.state.descr} />
             </Card >
         );
     }
-
-    /*
-    getCheerButton(){
-        if (this.state)
-        return (
-            <div onClick={onClick} disabled={disabled}>
-                <Icon type={type} />
-                <div>{text}</div>
-            </div>
-        );
-    }
-    */
 
     onClickCheer() {
         console.log('click on cheer');
