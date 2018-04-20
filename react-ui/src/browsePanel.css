@@ -1,0 +1,15 @@
+.browse{
+    height: 90vh;
+    padding: 20px 5px 20px 5px ;
+    display: grid;
+    grid-template-columns: 49.8% 49.8%;
+    grid-column-gap : 0.4%;
+    grid-template-rows : repeat(4, 25%);
+    grid-row-gap : 1%;
+}
+
+.habitCard {
+    display: inline-block;
+    text-align : center;
+    align-content: center;
+}

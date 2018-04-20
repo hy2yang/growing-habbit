@@ -52,7 +52,7 @@ class App extends Component {
           clearBanner = {this.closeBanner.bind(this)}
         />
 
-        <BrowsePanel array={this.state.habits}/>
+        <BrowsePanel array={this.state.habits} viewerId={this.userId}/>
 
       </div>
     );
