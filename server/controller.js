@@ -87,12 +87,16 @@ app.put('/users/:username/password', (req, resp) => {
 app.get('/users/:username/habits', (req, resp) => {   // same user : get all, other user : get shared
     const userId = req.user.userId;
     const ownerName = req.params.username;
+    const pageNum = +req.query.pageNum;
+    const pageSize = +req.query.pageSize;
+    const from = pageNum*pageSize;
+    const to = from + pageSize;
 
     accountService.getUserIdByName(ownerName).then(ownerId =>{
         if (ownerId === userId){
-            habitService.getHabitsOfUser(ownerId, true).then(res => handleRes(res, resp));
+            habitService.getHabitsOfUser(ownerId, true).then(arr => handleRes(handleArray(arr,from,to), resp));
         } else{
-            habitService.getHabitsOfUser(ownerId, false).then(res => handleRes(res, resp));
+            habitService.getHabitsOfUser(ownerId, false).then(arr => handleRes(handleArray(arr,from,to), resp));
         }
     });
 });
@@ -168,8 +172,19 @@ app.post('/habits/:habitId/cheers', (req, resp) => {
 app.get('/habits', (req, resp) => {
     const pageNum = +req.query.pageNum;
     const pageSize = +req.query.pageSize;
-    habitService.getHabitsFrontPage(pageNum, pageSize).then(res => handleRes(res, resp));
+    const from = pageNum*pageSize;
+    const to = from + pageSize;
+    habitService.getHabitsFrontPage().then(arr => {        
+        handleRes(handleArray(arr,from,to), resp);
+    });
 });
+
+function handleArray(arr, from, to){
+    if (arr.error || arr.alert) return arr;
+    const habits = arr.slice(from,to);
+    if (!habits || habits.length<1 ) return { alert: 'no more records' };
+    else return {habits : habits, total: arr.length};
+}
 
 
 db.init(() => {

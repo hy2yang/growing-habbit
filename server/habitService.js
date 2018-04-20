@@ -52,10 +52,9 @@ function getHabitObject(params) {
     };
 }
 
-async function getHabitsFrontPage(page, pageSize) {
-    const skip = pageSize * page;
+async function getHabitsFrontPage() {
     try {
-        const doc = await habits.find({ shared: { $eq: true } }).skip(skip).limit(pageSize).toArray();
+        const doc = await habits.find({ shared: { $eq: true } }).toArray();        
         if (!doc || doc.length<1 ) return { alert: 'no more records' };
         else return doc;
     }
@@ -64,7 +63,7 @@ async function getHabitsFrontPage(page, pageSize) {
     }
 }
 
-async function getHabitsOfUser(userId, getall) {  // only when getall is true will this return all habits of a user
+async function getHabitsOfUser(userId, getall) {  // only when getall is true will this include private habits of a user
     const params = { ownerId: ObjectId(userId).toString() };
     if (getall !== true) {
         params.shared = true;

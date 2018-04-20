@@ -5,8 +5,12 @@ import Login from './Login';
 import AccountDetail from './AccountDetail';
 import Navigation from './Navigation';
 import BrowsePanel from './BrowsePanel';
+import { Pagination } from 'antd';
+import 'antd/lib/pagination/style/css';
 
 import connection from './connection';
+
+const DEFAULT_PAGE_SIZE = 8;
 
 class App extends Component {
 
@@ -17,10 +21,16 @@ class App extends Component {
       info: null,
       error: null,
       warning: null,
-      habits: []
+      habits: [],
+      habitsURL : null,
+      totalHabits : 0,
+      currentPage : 1
     };
     this.userId = null;
     this.jwtToken = null;
+  }
+
+  componentDidMount(){
     this.updateHabitList('/habits', 0);
   }
 
@@ -55,6 +65,17 @@ class App extends Component {
 
         <BrowsePanel array={this.state.habits} viewerId={this.userId} />
 
+        <div className='pagination'>
+          <Pagination 
+            current={this.state.currentPage}
+            pageSize={DEFAULT_PAGE_SIZE}
+            total={this.state.totalHabits}
+            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} habits`}
+            onChange={(pageNum) => {              
+              this.setState({currentPage: pageNum}, this.updateHabitList(this.state.habitsURL, pageNum-1));
+            }}
+          />
+        </div>
       </div>
     );
 
@@ -73,15 +94,16 @@ class App extends Component {
   }
 
   updateHabitList(path, pageNum) {
-    const pageSize = 8;
+    this.showElement('#loading');
+    const pageSize = DEFAULT_PAGE_SIZE;
     const pageNumber = pageNum ? +pageNum : 0;
     connection.fetchJsonFrom(`${path}?pageNum=${pageNumber}&pageSize=${pageSize}`, 'get', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({ habits: res });
+          this.setState({ habits: res.habits, totalHabits:res.total, habitsURL:path }, this.hideElement('#loading'));
         }
         else {
-          this.setState({ habits: [] });
+          this.setState({ habits: [], totalHabits:0, habitsURL:'/habits'}, this.hideElement('#loading'));
           this.handleException(res);
         };
       })
@@ -109,9 +131,10 @@ class App extends Component {
   loginSubmit(body) {
     this.showElement('#loading');
     const handleRes = (res) => {
-      this.setState({ username: res.username, info: 'login success' }, () => {
+      this.setState({ username: res.username, info: 'login success', currentPage : 1}, () => {
         this.userId = res.userId;
         this.jwtToken = res.token;
+        this.updateHabitList(this.state.habitsURL, 0);
         this.hideElement('#loading');
       })
     };
@@ -122,9 +145,10 @@ class App extends Component {
     this.showElement('#loading');
     this.updateHabitList('/habits', 0);
     const handleRes = (res) => {
-      this.setState({ username: null, info: 'logout success' }, () => {
+      this.setState({ username: null, info: 'logout success', currentPage : 1}, () => {
         this.userId = null;
         this.jwtToken = null;
+        this.updateHabitList(this.state.habitsURL, 0)
         this.hideElement('#loading');
       });
     };
@@ -146,7 +170,7 @@ class App extends Component {
     const handleRes = (res) => {
       this.setState({ info: 'You have created your account! You can login now' }, () => this.hideElement('#loading'));
     };
-    this.handleFetch(connection.fetchJsonFrom('/users', 'post', null, body), handleRes);    
+    this.handleFetch(connection.fetchJsonFrom('/users', 'post', null, body), handleRes);
   }
 
 

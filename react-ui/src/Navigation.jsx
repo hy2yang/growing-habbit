@@ -38,14 +38,7 @@ class Navigation extends Component {
                 this.setState({ current:'mine'}, this.props.updateHabitDisplay(`/users/${this.state.username}/habits`, 0));
             }
         }
-    }
-
-    showAddModal() {
-        this.setState({ addModalVisible: true });
-    }
-
-    hideAddModal() {
-        this.setState({ addModalVisible: false });
+        else this.setState({ current:'shared'});
     }
 
     render() {
@@ -62,8 +55,8 @@ class Navigation extends Component {
                     <Menu.Item key='new' disabled={!hasUser}>
                         <Icon type='plus-circle-o' /> New habit
                         <AddHabitModal
-                            showAddModal={this.showAddModal.bind(this)}
-                            hideAddModal={this.hideAddModal.bind(this)}
+                            showAddModal={()=> this.setState({ addModalVisible: true }) } 
+                            hideAddModal={()=> this.setState({ addModalVisible: false }) }
                             addModalVisible={this.state.addModalVisible}
                             createHabit={this.props.createHabit}
                         />
