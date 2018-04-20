@@ -30,11 +30,7 @@ class HorizontalLoginForm extends Component {
     hideRegisterModal(){
         this.setState({ registerModalVisible: false });
     }
-
-    componentDidMount() {
-        this.props.form.validateFields();
-    }
-
+    
     handleSubmit = (e) => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {

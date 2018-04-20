@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { Card } from "antd";
-import 'antd/lib/card/style/css';
 import './browsePanel.css';
 
 import HabitCard from './HabitCard';

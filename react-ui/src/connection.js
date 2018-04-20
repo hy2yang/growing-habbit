@@ -9,4 +9,4 @@ function fetchJsonFrom(url, method, jwtToken, body) {
     });
 }
 
-export default {fetchJsonFrom };
+export default { fetchJsonFrom };

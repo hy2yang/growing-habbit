@@ -19,7 +19,7 @@ class App extends Component {
       warning : null,
       habits :[]
     };
-    this.updateHabitDisplay('/habits', 0);
+    this.updateHabitList('/habits', 0);
   }
 
   componentDidMount() {
@@ -47,7 +47,7 @@ class App extends Component {
         <Navigation 
           username={this.state.username} 
           accountPanel={accountPanel()} 
-          updateHabitDisplay={this.updateHabitDisplay.bind(this)} 
+          updateHabitDisplay={this.updateHabitList.bind(this)} 
           createHabit = {this.createHabit.bind(this)}
           clearBanner = {this.closeBanner.bind(this)}
         />
@@ -78,7 +78,7 @@ class App extends Component {
       .then(res => {
         if (!res.error && !res.alert) {
           this.setState({ info :'You have created a new habit!' });
-          this.updateHabitDisplay(path, 0);
+          this.updateHabitList(path, 0);
           this.hideElement('#loading');
         }
         else {
@@ -112,7 +112,7 @@ class App extends Component {
     });
   }
 
-  updateHabitDisplay(path, pageNum){
+  updateHabitList(path, pageNum){
     const pageSize=8;
     const pageNumber = pageNum? +pageNum:0;
     connection.fetchJsonFrom(`${path}?pageNum=${pageNumber}&pageSize=${pageSize}`, 'get', this.jwtToken , null)
@@ -121,6 +121,7 @@ class App extends Component {
           this.setState({habits : res});          
         }
         else {
+          this.setState({habits : []}); 
           this.handleException(res);
         };
       })
@@ -153,7 +154,7 @@ class App extends Component {
 
   logoutSubmit() {
     this.showElement('#loading');
-    this.updateHabitDisplay('/habits', 0);
+    this.updateHabitList('/habits', 0);
     connection.fetchJsonFrom('./logout', 'post', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {
