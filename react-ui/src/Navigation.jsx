@@ -25,28 +25,19 @@ class Navigation extends Component {
 
     handleClick = (e) => {
         this.props.clearBanner();
-        if (e.key!=='account'){
-            if (!this.state.username) {
-                if (e.key === 'shared' ) {
-                    this.setState({ current: 'shared' });
-                }
-            }
-            else {
-                if (e.key === 'new') {
-                    if (!this.state.addModalVisible) this.showAddModal();                    
-                }
-                else this.setState({ current: e.key }, () => {
-                    if (e.key === 'shared' || e.key === 'mine') {
-                        const path = (this.state.username && e.key === 'mine') ? `/users/${this.state.username}/habits` : '/habits';
-                        this.props.updateHabitDisplay(path, 0);
-                    }
-                });
+        if (e.key === 'shared' ) {
+            this.setState({ current: 'shared' }, this.props.updateHabitDisplay('/habits', 0));
+        }
+        else if (e.key==='new') {
+            if (!this.state.addModalVisible) {
+            this.setState({ current:'mine', addModalVisible: true});
             }
         }
-        else{
-            this.setState({ current: 'account' });
-        }       
-
+        else if (e.key==='mine'){
+            if (this.state.username){
+                this.setState({ current:'mine'}, this.props.updateHabitDisplay(`/users/${this.state.username}/habits`, 0));
+            }
+        }
     }
 
     showAddModal() {
