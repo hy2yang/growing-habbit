@@ -6,8 +6,6 @@ import 'antd/lib/menu/style/css';
 import './navigation.css';
 import AddHabitModal from './AddHabitModal';
 
-import connection from './connection';
-
 class Navigation extends Component {
 
     constructor(props) {
@@ -37,7 +35,7 @@ class Navigation extends Component {
         else this.setState({ current: e.key }, () => {
             if (e.key !== 'account' && e.key!=='new') {
                 const path = (this.state.username && this.state.current === 'mine') ? `/users/${this.state.username}/habits` : '/habits';
-                this.props.updateHabitDisplay(path);
+                this.props.updateHabitDisplay(path,0);
             }
             this.props.clearBanner();
         });

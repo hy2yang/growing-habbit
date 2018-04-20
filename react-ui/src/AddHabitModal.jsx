@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Modal, Form, Input, Radio } from 'antd';
-import 'antd/lib/button/style/css';
+import { Modal, Form, Input, Radio } from 'antd';
 import 'antd/lib/modal/style/css';
 import 'antd/lib/form/style/css';
 import 'antd/lib/input/style/css';
@@ -23,7 +22,7 @@ const NewHabitForm = Form.create()(
                 >
                     <Form layout="vertical">
                         <FormItem label='Habit name'>
-                            {getFieldDecorator('habitName', {
+                            {getFieldDecorator('name', {
                                 rules: [{ required: true, whitespace: true, message: 'name this habit' }],
                             })(
                                 <Input />
@@ -38,11 +37,11 @@ const NewHabitForm = Form.create()(
                         </FormItem>
                         <FormItem >
                             {getFieldDecorator('shared', {
-                                initialValue: 'true',
+                                initialValue: true,
                             })(
                                 <Radio.Group>
-                                    <Radio value='true'>Public</Radio>
-                                    <Radio value='false'>Private</Radio>
+                                    <Radio value={true}>Public</Radio>
+                                    <Radio value={false}>Private</Radio>
                                 </Radio.Group>
                             )}
                         </FormItem>
@@ -60,9 +59,9 @@ class AddHabitModal extends Component {
         const form = this.formRef.props.form;
         form.validateFields((err, values) => {
             if (err) return;
-            console.log('receive data from form', values);
+            //console.log('receive data from form', values);
             form.resetFields();
-            //this.props.createHabbit();
+            this.props.createHabit(values);
             this.props.hideAddModal();
         });
     }

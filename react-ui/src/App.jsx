@@ -20,7 +20,7 @@ class App extends Component {
       datasource : null,
       habits :[]
     };
-    this.updateHabitDisplay('/habits');
+    this.updateHabitDisplay('/habits', 0);
   }
 
   componentDidMount() {
@@ -73,7 +73,25 @@ class App extends Component {
   }
 
   createHabit(body){
-    console.log('App.jsx createHabit called with ', body);
+    this.showElement('#loading');
+    const path =`/users/${this.state.username}/habits`;
+    connection.fetchJsonFrom(path, 'post', this.jwtToken ,body)
+      .then(res => {
+        if (!res.error && !res.alert) {
+          this.setState({ info :'You have created a new habit!' });
+          this.updateHabitDisplay(path, 0);
+          this.hideElement('#loading');
+        }
+        else {
+          this.handleException(res);
+          this.hideElement('#loading');
+        };
+      })
+      .catch(e=>{
+        this.handleException({error : e});
+        this.hideElement('#loading');
+    });
+    
   }
 
   registerNewAccount(body){
@@ -95,8 +113,10 @@ class App extends Component {
     });
   }
 
-  updateHabitDisplay(path){ 
-    connection.fetchJsonFrom(path, 'get', this.jwtToken ,null)
+  updateHabitDisplay(path, pageNum){
+    const pageSize=8;
+    const pageNumber = pageNum? +pageNum:0;
+    connection.fetchJsonFrom(`${path}?pageNum=${pageNumber}&pageSize=${pageSize}`, 'get', this.jwtToken , null)
       .then(res => {
         if (!res.error && !res.alert) {
           this.setState({
@@ -137,7 +157,7 @@ class App extends Component {
 
   logoutSubmit() {
     this.showElement('#loading');
-    this.updateHabitDisplay('/habits');
+    this.updateHabitDisplay('/habits', 0);
     connection.fetchJsonFrom('./logout', 'post', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {

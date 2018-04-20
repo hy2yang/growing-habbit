@@ -166,9 +166,9 @@ app.post('/habits/:habitId/cheers', (req, resp) => {
 
 
 app.get('/habits', (req, resp) => {
-    const page = +req.query.page;
+    const pageNum = +req.query.pageNum;
     const pageSize = +req.query.pageSize;
-    habitService.getHabitsFrontPage(page, pageSize).then(res => handleRes(res, resp));
+    habitService.getHabitsFrontPage(pageNum, pageSize).then(res => handleRes(res, resp));
 });
 
 
