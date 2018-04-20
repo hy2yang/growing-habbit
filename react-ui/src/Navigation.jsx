@@ -12,37 +12,48 @@ class Navigation extends Component {
         this.state = {
             username: null,
             current: null,
-            addModalVisible : false
+            addModalVisible: false
         };
     }
 
     componentWillReceiveProps(nextProps) {
+        const username = nextProps.username ? nextProps.username : null;
         this.setState({
-            username: nextProps.username ? nextProps.username : null
+            username: username
         });
     }
 
-    handleClick = (e) => {   
-        if (e.key === 'account' || e.key ==='new') {
-            this.props.clearBanner();   
-            if (e.key==='new' && !this.state.addModalVisible){
-                this.showAddModal();
+    handleClick = (e) => {
+        this.props.clearBanner();
+        if (e.key!=='account'){
+            if (!this.state.username) {
+                if (e.key === 'shared' ) {
+                    this.setState({ current: 'shared' });
+                }
             }
-        }  
-        else this.setState({ current: e.key }, () => {
-            if (e.key !== 'account' && e.key!=='new') {
-                const path = (this.state.username && this.state.current === 'mine') ? `/users/${this.state.username}/habits` : '/habits';
-                this.props.updateHabitDisplay(path,0);
+            else {
+                if (e.key === 'new') {
+                    if (!this.state.addModalVisible) this.showAddModal();                    
+                }
+                else this.setState({ current: e.key }, () => {
+                    if (e.key === 'shared' || e.key === 'mine') {
+                        const path = (this.state.username && e.key === 'mine') ? `/users/${this.state.username}/habits` : '/habits';
+                        this.props.updateHabitDisplay(path, 0);
+                    }
+                });
             }
-            this.props.clearBanner();
-        });
+        }
+        else{
+            this.setState({ current: 'account' });
+        }       
+
     }
 
-    showAddModal(){
+    showAddModal() {
         this.setState({ addModalVisible: true });
     }
 
-    hideAddModal(){
+    hideAddModal() {
         this.setState({ addModalVisible: false });
     }
 
@@ -57,13 +68,13 @@ class Navigation extends Component {
                     <Menu.Item key='mine' disabled={!hasUser}>
                         <Icon type='user' />Mine
                     </Menu.Item>
-                    <Menu.Item key='new' disabled={!hasUser}>                         
+                    <Menu.Item key='new' disabled={!hasUser}>
                         <Icon type='plus-circle-o' /> New habit
-                        <AddHabitModal 
-                        showAddModal = {this.showAddModal.bind(this)} 
-                        hideAddModal = {this.hideAddModal.bind(this)} 
-                        addModalVisible = {this.state.addModalVisible}
-                        createHabit = {this.props.createHabit}
+                        <AddHabitModal
+                            showAddModal={this.showAddModal.bind(this)}
+                            hideAddModal={this.hideAddModal.bind(this)}
+                            addModalVisible={this.state.addModalVisible}
+                            createHabit={this.props.createHabit}
                         />
                     </Menu.Item>
                     <Menu.Item key='account'>
