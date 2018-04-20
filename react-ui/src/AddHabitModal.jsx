@@ -59,7 +59,6 @@ class AddHabitModal extends Component {
         const form = this.formRef.props.form;
         form.validateFields((err, values) => {
             if (err) return;
-            //console.log('receive data from form', values);
             form.resetFields();
             this.props.createHabit(values);
             this.props.hideAddModal();

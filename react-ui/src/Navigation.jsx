@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import Icon from 'antd/lib/icon';
+import { Icon, Menu } from 'antd';
 import 'antd/lib/icon/style/css';
-import Menu from 'antd/lib/menu';
 import 'antd/lib/menu/style/css';
 import './navigation.css';
 import AddHabitModal from './AddHabitModal';
@@ -27,8 +26,6 @@ class Navigation extends Component {
         if (e.key === 'account' || e.key ==='new') {
             this.props.clearBanner();   
             if (e.key==='new' && !this.state.addModalVisible){
-                
-                //const path =`/users/${this.state.username}/habits`;
                 this.showAddModal();
             }
         }  

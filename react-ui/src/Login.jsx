@@ -1,10 +1,7 @@
-import Form from 'antd/lib/form';
+import { Form, Icon, Input, Button } from 'antd';
 import 'antd/lib/form/style/css';
-import Icon from 'antd/lib/icon';
 import 'antd/lib/icon/style/css';
-import Input from 'antd/lib/input';
 import 'antd/lib/input/style/css';
-import Button from 'antd/lib/button';
 import 'antd/lib/button/style/css';
 
 import RegisterModal from './RegisterModal';

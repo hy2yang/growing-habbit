@@ -17,7 +17,6 @@ class App extends Component {
       info : null,
       error : null,
       warning : null,
-      datasource : null,
       habits :[]
     };
     this.updateHabitDisplay('/habits', 0);
@@ -50,11 +49,7 @@ class App extends Component {
           accountPanel={accountPanel()} 
           updateHabitDisplay={this.updateHabitDisplay.bind(this)} 
           createHabit = {this.createHabit.bind(this)}
-          clearBanner={()=>{
-            this.closeBanner('info');
-            this.closeBanner('warning');
-            this.closeBanner('error');
-            }}
+          clearBanner = {this.closeBanner.bind(this)}
         />
 
         <BrowsePanel array={this.state.habits}/>
@@ -64,12 +59,16 @@ class App extends Component {
 
   }
 
-  closeBanner(type){
-    this.setState({ [type] : null} );
-  }
-
   handleException(res){
     this.setState({error : res.error, warning : res.alert});
+  }
+
+  closeBanner(){
+    this.setState({ 
+      info : null,
+      error : null,
+      warning : null
+    });
   }
 
   createHabit(body){
@@ -119,10 +118,7 @@ class App extends Component {
     connection.fetchJsonFrom(`${path}?pageNum=${pageNumber}&pageSize=${pageSize}`, 'get', this.jwtToken , null)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({
-            habits : res,
-            datasource : path
-          });          
+          this.setState({habits : res});          
         }
         else {
           this.handleException(res);
@@ -161,7 +157,7 @@ class App extends Component {
     connection.fetchJsonFrom('./logout', 'post', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({username : null, datasource : '/habits', info :'logout success'}, () => {
+          this.setState({username : null, info :'logout success'}, () => {
             delete this.userId;
             delete this.jwtToken;            
             this.hideElement('#loading');      

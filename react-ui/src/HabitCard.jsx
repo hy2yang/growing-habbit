@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import Icon from 'antd/lib/icon';
+import { Icon, Card } from 'antd';
 import 'antd/lib/icon/style/css';
-import Card from 'antd/lib/card';
 import 'antd/lib/card/style/css';
 
 const connection = require('./connection');
