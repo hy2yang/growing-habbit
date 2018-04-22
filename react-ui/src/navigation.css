@@ -10,3 +10,7 @@
 nobr {
     margin-right: 15px;
 }
+
+.ant-menu-item .anticon, .ant-menu-submenu-title .anticon{
+	margin-right: 0px;
+}

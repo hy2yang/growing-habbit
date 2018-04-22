@@ -4,7 +4,7 @@ class Introduction extends React.Component {
     render() {
       return (
         <div>
-            <p>{'This is a lifestyle SPA that tracks and shares your development of a habit.'}</p>
+            <p>{'This is a lifestyle SPA that tracks and shares your development of new habits.'}</p>
             <br/>
             <p>{'Rules :'}</p>
             <br/>
@@ -16,11 +16,12 @@ class Introduction extends React.Component {
             <br/>
             <p>{'4. Once per day, user can check in a habit to record one more day developing the habit'}</p>
             <br/>
-            <p>{'5. Finishing a habit will render it \'finished\', un-finish a habit will reset the progress'}</p>
+            <p>{'5. Finishing a habit will render it \'finished\', restart a habit will reset the progress'}</p>
             <br/>
             <p>{'6. The percentage in the progress bar is based on studies that it took 66 days to develop a habit, or you can finish it to set the progress to 100%'}</p>
             <br/>
             <p>{'7. Deletion of a habit is unrecoverable'}</p>
+            <br/>
         </div>
       );
     }

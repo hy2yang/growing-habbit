@@ -1,8 +1,9 @@
-import { Form, Icon, Input, Button } from 'antd';
+import { Form, Icon, Input, Button, Tooltip } from 'antd';
 import 'antd/lib/form/style/css';
 import 'antd/lib/icon/style/css';
 import 'antd/lib/input/style/css';
 import 'antd/lib/button/style/css';
+import 'antd/lib/tooltip/style/css';
 
 import RegisterModal from './RegisterModal';
 
@@ -63,9 +64,9 @@ class HorizontalLoginForm extends Component {
                         )}
                     </FormItem>
                     <FormItem>
-                        <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())} >
-                            Log in
-                        </Button>                        
+                        <Tooltip placement='bottom' title={'login'}>
+                            <Button icon='login' htmlType="submit" disabled={hasErrors(getFieldsError())} ></Button>  
+                        </Tooltip>                      
                     </FormItem> 
                     <FormItem>
                         <RegisterModal 
