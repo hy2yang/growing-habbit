@@ -28,7 +28,6 @@ app.use(jwt({
 
 app.use(function (err, req, res, next) {
     if (err) {
-        //console.log(err);
         res.status(401).send(JSON.stringify({ alert: 'invalid jwt token' }));
     }
 });
@@ -156,7 +155,6 @@ app.put('/habits/:habitId/finished', (req, resp) => {
         }
         else {
             habitService.finishHabit(req.params.habitId, finished).then(res =>{
-                console.log(res);
                 handleRes(res, resp);
             } );
         }
