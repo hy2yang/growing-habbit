@@ -15,7 +15,7 @@ const DEFAULT_PAGE_SIZE = 8;
 notification.config({
   placement: 'topRight',
   top: 41,
-  duration: 3,
+  duration: 1.5,
 });
 
 class App extends Component {

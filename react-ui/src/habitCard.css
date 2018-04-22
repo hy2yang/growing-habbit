@@ -3,6 +3,15 @@
     padding-bottom: 1%;
 }
 
+.ant-card-hoverable:hover {    
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    border-color: rgba(24, 144, 255, 0.2);
+}
+
+.ant-card-bordered {
+    border: 1px solid #bbccdc;
+}
+
 p{
     margin-bottom: 0; 
 }

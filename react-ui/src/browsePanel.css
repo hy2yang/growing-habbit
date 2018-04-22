@@ -6,7 +6,7 @@
     grid-template-columns: 49.8% 49.8%;
     grid-column-gap : 0.4%;
     grid-template-rows : repeat(4, 24%);
-    grid-row-gap : 1%;
+    grid-row-gap : 0.7%;
     border-bottom: 1px solid #e8e8e8;
 }
 
