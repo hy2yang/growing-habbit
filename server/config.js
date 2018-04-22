@@ -9,7 +9,7 @@ module.exports = {
     ACCESSIBLE : [
         '',
         '/index.html',
-        '/favicon.ico'
+        '/favicon.ico',
         '/app',
         '/login',
         '/habits', 
