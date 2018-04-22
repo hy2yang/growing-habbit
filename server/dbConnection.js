@@ -6,7 +6,8 @@ async function init(callback) {
     try {
         db = await new Promise((resolve, reject) => {
             const path = require('./config').DBPATH;
-            mongodb.MongoClient.connect(path, {uri_decode_auth: true}, function (err, client) {
+            console.log(path);
+            mongodb.MongoClient.connect(path, function (err, client) {
                 if (err) {
                     reject(err);
                 }
