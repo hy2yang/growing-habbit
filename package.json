@@ -5,7 +5,10 @@
     "start": "node server/controller.js",
     "heroku-postbuild": "cd react-ui/ && npm install && npm run build"
   },
-  
+  "engines": {
+    "node":"8.9.4",
+    "npm": "5.8.0"
+  },
   "keywords": [],
   "dependencies": {
     "body-parser": "^1.18.2",
