@@ -8,7 +8,7 @@ module.exports = {
     },
     ACCESSIBLE : [
         '',
-        '/',
+        '/index',
         '/app',
         '/login',
         '/habits', 
