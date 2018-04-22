@@ -25,7 +25,13 @@
 	height: 41px;
 }
 
-.pagination{
+.footer{
 	height: 40px;
 	padding-top: 2px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.intropop{
+	width: 28rem;
 }

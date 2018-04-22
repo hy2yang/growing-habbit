@@ -4,9 +4,12 @@ import Login from './Login';
 import AccountDetail from './AccountDetail';
 import Navigation from './Navigation';
 import BrowsePanel from './BrowsePanel';
-import { Pagination, notification } from 'antd';
+import Introduction from './Introduction';
+import { Pagination, notification, Button, Popover } from 'antd';
 import 'antd/lib/pagination/style/css';
 import 'antd/lib/notification/style/css';
+import 'antd/lib/button/style/css';
+import 'antd/lib/popover/style/css';
 
 import connection from './connection';
 
@@ -62,16 +65,29 @@ class App extends Component {
 
         <BrowsePanel array={this.state.habits} viewerId={this.state.userId} getCardUpdaters={this.getCardUpdaters.bind(this)} />
 
-        <div className='pagination'>
-          <Pagination
-            current={this.state.currentPage}
-            pageSize={DEFAULT_PAGE_SIZE}
-            total={this.state.totalHabits}
-            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} habits`}
-            onChange={(pageNum) => {
-              this.setState({ currentPage: pageNum }, this.updateHabitList(this.state.habitsURL, pageNum - 1));
-            }}
-          />
+        <div className='footer'>
+
+          <div className='help'>
+            <Popover content={<Introduction/>} 
+              placement='topLeft' title='Growing Habit' trigger='focus'
+              overlayClassName='intropop'
+              >
+              <Button type='primary'>Introduction/Help</Button>
+            </Popover>
+          </div>
+
+          <div className='pagination'>
+            <Pagination
+              current={this.state.currentPage}
+              pageSize={DEFAULT_PAGE_SIZE}
+              total={this.state.totalHabits}
+              showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} habits`}
+              onChange={(pageNum) => {
+                this.setState({ currentPage: pageNum }, this.updateHabitList(this.state.habitsURL, pageNum - 1));
+              }}
+            />
+          </div>
+          
         </div>
 
       </div>

@@ -42,7 +42,7 @@ class HabitCard extends Component {
         const deleteHabit = this.getActionButton('delete', 'delete', !isOwner, this.onClickDelete.bind(this));
 
         const descr = this.state.habit.descr? (<p>{this.state.habit.descr}</p>):(<br/>);
-        const percentage = this.state.habit.finished? 100:(100*this.state.habit.height/66).toFixed(1);
+        const percentage = this.state.habit.finished? 100:Math.min(100,(100*this.state.habit.height/66).toFixed(1));
 
         return (
             <Card hoverable 
