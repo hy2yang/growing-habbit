@@ -112,6 +112,7 @@ async function finishHabit(habitId, finished) {
     };
     if (!finished){
         update.$set.height = 0;
+        update.$set.checkin = new Date(0);
     }
     try {
         const res = await habits.findOneAndUpdate(

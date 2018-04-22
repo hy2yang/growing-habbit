@@ -36,9 +36,9 @@ class HabitCard extends Component {
 
     render() {
         const isOwner = Boolean(this.state.habit.ownerId === this.state.viewerId);
-        const cheer = this.state.cheered ? this.getActionButton('like', 'cheer', true, this.onClickCheer.bind(this)) : this.getActionButton('like-o', 'cheer', !this.state.viewerId, this.onClickCheer.bind(this));
-        const checkIn = this.state.checkedIn ? this.getActionButton('check', 'checkin', !isOwner || this.state.finished, null) : this.getActionButton('play-circle-o', 'checkin', !isOwner || this.state.finished, this.onClickCheckin.bind(this));
-        const finish = this.state.habit.finished ? this.getActionButton('tags', 'finish', !isOwner, this.onClickFinish.bind(this)) : this.getActionButton('tags-o', 'finish', !isOwner, this.onClickFinish.bind(this));
+        const cheer = this.state.cheered ? this.getActionButton('like', 'cheered', true, this.onClickCheer.bind(this)) : this.getActionButton('like-o', 'cheer', !this.state.viewerId, this.onClickCheer.bind(this));
+        const checkIn = this.state.checkedIn ? this.getActionButton('check', 'checked', !isOwner || this.state.finished, null) : this.getActionButton('play-circle-o', 'checkin', !isOwner || this.state.finished, this.onClickCheckin.bind(this));
+        const finish = this.state.habit.finished ? this.getActionButton('reload', 'restart', !isOwner, this.onClickFinish.bind(this)) : this.getActionButton('flag', 'finish', !isOwner, this.onClickFinish.bind(this));
         const deleteHabit = this.getActionButton('delete', 'delete', !isOwner, this.onClickDelete.bind(this));
 
         const descr = this.state.habit.descr? (<p>{this.state.habit.descr}</p>):(<br/>);
@@ -75,7 +75,7 @@ class HabitCard extends Component {
     }
 
     onClickFinish() {
-        this.props.getCardUpdaters(this.state.habit._id).finish(!this.state.finished,this.updateSelf.bind(this));
+        this.props.getCardUpdaters(this.state.habit._id).finish(!this.state.habit.finished,this.updateSelf.bind(this));
     }
 
     onClickDelete() {

@@ -232,11 +232,6 @@ class App extends Component {
 
   }
 
-  getCardById(id, handleRes) {
-    this.handleFetch(connection.fetchJsonFrom(`/habits/${id}`, 'get', this.jwtToken, null), handleRes);
-  }
-
-
   hideLoading() {
     document.querySelector('#loading').classList.add('hidden');
   }
