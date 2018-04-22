@@ -5,10 +5,7 @@
     "start": "node server/controller.js",
     "heroku-postbuild": "cd react-ui/ && npm install && npm run build"
   },
-  "cacheDirectories": [
-    "node_modules",
-    "react-ui/node_modules"
-  ],
+  
   "keywords": [],
   "dependencies": {
     "body-parser": "^1.18.2",
