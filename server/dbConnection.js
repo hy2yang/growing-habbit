@@ -6,7 +6,6 @@ async function init(callback) {
     try {
         db = await new Promise((resolve, reject) => {
             const path = require('./config').DBPATH;
-            console.log(path);
             mongodb.MongoClient.connect(path, function (err, client) {
                 if (err) {
                     reject(err);

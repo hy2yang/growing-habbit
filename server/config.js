@@ -7,6 +7,9 @@ module.exports = {
         PW : /.*[A-Za-z0-9]{4,20}$/   
     },
     ACCESSIBLE : [
+        '',
+        '/',
+        '/app',
         '/login',
         '/habits', 
         {url: '/users', methods: 'POST'}
