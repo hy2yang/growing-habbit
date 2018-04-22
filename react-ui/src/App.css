@@ -1,7 +1,8 @@
 .App {
   text-align: center;
-  display: grid;
-  grid-auto-rows: auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 #loading{
@@ -25,5 +26,6 @@
 }
 
 .pagination{
+	height: 40px;
 	padding-top: 2px;
 }
