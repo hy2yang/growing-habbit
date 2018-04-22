@@ -47,7 +47,7 @@ function getHabitObject(params) {
         shared: params.shared,
         finished: false,
         height: 0,
-        checkin: new Date(),
+        checkin: new Date(0),
         cheers: []
     };
 }
