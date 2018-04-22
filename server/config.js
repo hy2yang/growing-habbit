@@ -1,5 +1,5 @@
 module.exports = {
-    DBPATH: process.env.MONGODB_URI? process.env.MONGODB_URI+'/agate-db':'mongodb://localhost:27017/agate-db',
+    DBPATH: process.env.MONGODB_URI || 'mongodb://localhost:27017/agate-db',
     PORT_EXPRESS : process.env.PORT || 2666,
     JWT_SECRET: 'growing-habbit',
     REGEX : {
