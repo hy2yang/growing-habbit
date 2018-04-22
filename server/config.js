@@ -8,7 +8,8 @@ module.exports = {
     },
     ACCESSIBLE : [
         '',
-        '/index',
+        '/index.html',
+        '/favicon.ico'
         '/app',
         '/login',
         '/habits', 
