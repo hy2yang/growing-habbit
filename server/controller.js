@@ -22,7 +22,7 @@ app.use(jwt({
     isRevoked: (req, payload, done) => {
         done(null, authService.isRevoked(payload.toString()));
     }
-}).unless({ path: require('./config').ACCESSIBLE })
+}).unless({ path: require('./config').ACCESSIBLE , method: 'OPTIONS' })
 );
 
 

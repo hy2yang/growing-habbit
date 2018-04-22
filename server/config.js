@@ -7,7 +7,8 @@ module.exports = {
         PW : /.*[A-Za-z0-9]{4,20}$/   
     },
     ACCESSIBLE : [
-        '',
+        /\/static\/.*$/,
+        '/',
         '/index.html',
         '/favicon.ico',
         '/app',
