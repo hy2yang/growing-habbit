@@ -60,7 +60,6 @@ class App extends Component {
           accountPanel={accountPanel()}
           updateHabitDisplay={this.updateHabitList.bind(this)}
           createHabit={this.createHabit.bind(this)}
-          clearBanner={this.closeBanner.bind(this)}
         />
 
         <BrowsePanel array={this.state.habits} viewerId={this.state.userId} getCardUpdaters={this.getCardUpdaters.bind(this)} />
@@ -102,14 +101,6 @@ class App extends Component {
     if (res.alert) {
       notification['warning']({ message: res.alert });
     }
-  }
-
-  closeBanner() {
-    this.setState({
-      info: null,
-      error: null,
-      warning: null
-    });
   }
 
   updateHabitList(path, pageNum) {
@@ -179,7 +170,8 @@ class App extends Component {
     const path = `/users/${this.state.username}/habits`;
     const handleRes = (res) => {
       this.updateHabitList(path, 0);
-      this.setState({ info: 'You have created a new habit!' }, () => this.hideLoading());
+      this.hideLoading();
+      notification['success']({ message: 'You have created a new habit!' });      
     };
     this.handleFetch(connection.fetchJsonFrom(path, 'post', this.jwtToken, body), handleRes);
   }
@@ -187,7 +179,8 @@ class App extends Component {
   registerNewAccount(body) {
     this.showLoading();
     const handleRes = (res) => {
-      this.setState({ info: 'You have created your account! You can login now' }, () => this.hideLoading());
+      notification['success']({ message: 'logout success' });
+      this.hideLoading();
     };
     this.handleFetch(connection.fetchJsonFrom('/users', 'post', null, body), handleRes);
   }

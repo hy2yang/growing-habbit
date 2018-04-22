@@ -24,7 +24,6 @@ class Navigation extends Component {
     }
 
     handleClick = (e) => {
-        this.props.clearBanner();
         if (e.key === 'shared' ) {
             this.setState({ current: 'shared' }, this.props.updateHabitDisplay('/habits', 0));
         }
