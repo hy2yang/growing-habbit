@@ -45,7 +45,7 @@ class App extends Component {
     const loading = require('./loading.gif');
     const accountPanel = () => {
       if (this.state.username) {
-        return (<AccountDetail username={this.state.username} logoutSubmit={() => this.logoutSubmit()} />)
+        return (<AccountDetail username={this.state.username} logoutSubmit={this.logoutSubmit.bind(this)} />)
       }
       else return (<Login loginSubmit={this.loginSubmit.bind(this)} registerSubmit={this.registerNewAccount.bind(this)} />);
     }
@@ -152,13 +152,12 @@ class App extends Component {
   }
 
   logoutSubmit() {
-    this.showLoading();
-    this.updateHabitList('/habits', 0);
+    this.showLoading();    
     const handleRes = (res) => {
       this.setState({ username: null, currentPage: 1, userId: null }, () => {
         notification['success']({ message: 'logout success' });
         this.jwtToken = null;
-        this.updateHabitList(this.state.habitsURL, 0)
+        this.updateHabitList('/habits', 0);
         this.hideLoading();
       });
     };
