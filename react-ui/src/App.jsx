@@ -81,7 +81,7 @@ class App extends Component {
               current={this.state.currentPage}
               pageSize={DEFAULT_PAGE_SIZE}
               total={this.state.totalHabits}
-              showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} habits`}
+              showTotal={(total, range) => `${Math.max(range[0],0)}-${range[1]} of ${total} habits`}
               onChange={(pageNum) => {
                 this.setState({ currentPage: pageNum }, this.updateHabitList(this.state.habitsURL, pageNum - 1));
               }}
