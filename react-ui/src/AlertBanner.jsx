@@ -4,24 +4,24 @@ import 'antd/lib/alert/style/css';
 
 class AlertBanner extends React.Component {
 
-    state = {
-      visiable : Boolean(this.props.message)
-    };
+  state = {
+    visiable: Boolean(this.props.message)
+  };
 
   componentWillReceiveProps(nextProps) {
-    this.setState({        
-        visiable: Boolean(nextProps.message)
+    this.setState({
+      visiable: Boolean(nextProps.message)
     });
   }
 
   render() {
-    const { message, type} = this.props;
+    const { message, type } = this.props;
     let bannerClassName = type + 'Banner';
     return (
 
-      <div className={bannerClassName} > 
-        { this.state.visiable?
-          (<Alert message={message} type={type}  banner closable afterClose={this.handleClose} />) : null 
+      <div className={bannerClassName} >
+        {this.state.visiable ?
+          (<Alert message={message} type={type} banner closable afterClose={this.props.afterClose} />) : null
         }
       </div>
     );

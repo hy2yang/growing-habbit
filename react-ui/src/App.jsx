@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import './App.css';
-import AlertBanner from './AlertBanner';
 import Login from './Login';
 import AccountDetail from './AccountDetail';
 import Navigation from './Navigation';
 import BrowsePanel from './BrowsePanel';
-import { Pagination } from 'antd';
+import { Pagination, notification } from 'antd';
 import 'antd/lib/pagination/style/css';
+import 'antd/lib/notification/style/css';
 
 import connection from './connection';
 
 const DEFAULT_PAGE_SIZE = 8;
+
+notification.config({
+  placement: 'topRight',
+  top: 41,
+  duration: 3,
+});
 
 class App extends Component {
 
@@ -18,19 +24,16 @@ class App extends Component {
     super(props);
     this.state = {
       username: null,
-      info: null,
-      error: null,
-      warning: null,
+      userId: null,
       habits: [],
-      habitsURL : null,
-      totalHabits : 0,
-      currentPage : 1
+      habitsURL: null,
+      totalHabits: 0,
+      currentPage: 1
     };
-    this.userId = null;
     this.jwtToken = null;
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.updateHabitList('/habits', 0);
   }
 
@@ -57,32 +60,32 @@ class App extends Component {
           clearBanner={this.closeBanner.bind(this)}
         />
 
-        <div className='banners'>
-          <AlertBanner message={this.state.info} type={'info'} />
-          <AlertBanner message={this.state.warning} type={'warning'} />
-          <AlertBanner message={this.state.error} type={'error'} />
-        </div>
-
-        <BrowsePanel array={this.state.habits} viewerId={this.userId} />
+        <BrowsePanel array={this.state.habits} viewerId={this.state.userId} getCardUpdaters={this.getCardUpdaters.bind(this)} />
 
         <div className='pagination'>
-          <Pagination 
+          <Pagination
             current={this.state.currentPage}
             pageSize={DEFAULT_PAGE_SIZE}
             total={this.state.totalHabits}
             showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} habits`}
-            onChange={(pageNum) => {              
-              this.setState({currentPage: pageNum}, this.updateHabitList(this.state.habitsURL, pageNum-1));
+            onChange={(pageNum) => {
+              this.setState({ currentPage: pageNum }, this.updateHabitList(this.state.habitsURL, pageNum - 1));
             }}
           />
         </div>
+
       </div>
     );
 
   }
 
   handleException(res) {
-    this.setState({ error: res.error, warning: res.alert });
+    if (res.error) {
+      notification['error']({ message: res.error });
+    }
+    if (res.alert) {
+      notification['warning']({ message: res.alert });
+    }
   }
 
   closeBanner() {
@@ -94,16 +97,16 @@ class App extends Component {
   }
 
   updateHabitList(path, pageNum) {
-    this.showElement('#loading');
+    this.showLoading();
     const pageSize = DEFAULT_PAGE_SIZE;
     const pageNumber = pageNum ? +pageNum : 0;
     connection.fetchJsonFrom(`${path}?pageNum=${pageNumber}&pageSize=${pageSize}`, 'get', this.jwtToken, null)
       .then(res => {
         if (!res.error && !res.alert) {
-          this.setState({ habits: res.habits, totalHabits:res.total, habitsURL:path }, this.hideElement('#loading'));
+          this.setState({ habits: res.habits, totalHabits: res.total, habitsURL: path, currentPage: pageNumber + 1 }, this.hideLoading());
         }
         else {
-          this.setState({ habits: [], totalHabits:0, habitsURL:'/habits'}, this.hideElement('#loading'));
+          this.setState({ habits: [], totalHabits: 0, habitsURL: '/habits', currentPage: 0 }, this.hideLoading());
           this.handleException(res);
         };
       })
@@ -119,67 +122,118 @@ class App extends Component {
       }
       else {
         this.handleException(res);
-        this.hideElement('#loading');
+        this.hideLoading();
       }
     })
       .catch(e => {
         this.handleException({ error: e });
-        this.hideElement('#loading');
+        this.hideLoading();
       });
   }
 
   loginSubmit(body) {
-    this.showElement('#loading');
+    this.showLoading();
     const handleRes = (res) => {
-      this.setState({ username: res.username, info: 'login success', currentPage : 1}, () => {
-        this.userId = res.userId;
+      this.setState({ username: res.username, currentPage: 1, userId: res.userId }, () => {
+        notification['success']({ message: 'login success' });
         this.jwtToken = res.token;
         this.updateHabitList(this.state.habitsURL, 0);
-        this.hideElement('#loading');
+        this.hideLoading();
       })
     };
     this.handleFetch(connection.fetchJsonFrom('./login', 'post', null, body), handleRes);
   }
 
   logoutSubmit() {
-    this.showElement('#loading');
+    this.showLoading();
     this.updateHabitList('/habits', 0);
     const handleRes = (res) => {
-      this.setState({ username: null, info: 'logout success', currentPage : 1}, () => {
-        this.userId = null;
+      this.setState({ username: null, currentPage: 1, userId: null }, () => {
+        notification['success']({ message: 'logout success' });
         this.jwtToken = null;
         this.updateHabitList(this.state.habitsURL, 0)
-        this.hideElement('#loading');
+        this.hideLoading();
       });
     };
     this.handleFetch(connection.fetchJsonFrom('./logout', 'post', this.jwtToken, null), handleRes);
   }
 
   createHabit(body) {
-    this.showElement('#loading');
+    this.showLoading();
     const path = `/users/${this.state.username}/habits`;
     const handleRes = (res) => {
       this.updateHabitList(path, 0);
-      this.setState({ info: 'You have created a new habit!' }, () => this.hideElement('#loading'));
+      this.setState({ info: 'You have created a new habit!' }, () => this.hideLoading());
     };
     this.handleFetch(connection.fetchJsonFrom(path, 'post', this.jwtToken, body), handleRes);
   }
 
   registerNewAccount(body) {
-    this.showElement('#loading');
+    this.showLoading();
     const handleRes = (res) => {
-      this.setState({ info: 'You have created your account! You can login now' }, () => this.hideElement('#loading'));
+      this.setState({ info: 'You have created your account! You can login now' }, () => this.hideLoading());
     };
     this.handleFetch(connection.fetchJsonFrom('/users', 'post', null, body), handleRes);
   }
 
 
-  hideElement(queryString) {
-    document.querySelector(queryString).classList.add('hidden');
+  getCardUpdaters(habitId) {
+    const cheer = (handleRes) => {
+      connection.fetchJsonFrom(`/habits/${habitId}/cheers`, 'post', this.jwtToken, null)
+        .then(res => {
+          if (!res.error && !res.alert) {
+            handleRes(res);
+          }
+        }).catch(e => console.log(e));
+    }
+
+    const checkin = (handleRes) => {
+      connection.fetchJsonFrom(`/habits/${habitId}/checkin`, 'post', this.jwtToken, null)
+        .then(res => {
+          if (!res.error && !res.alert) {
+            handleRes(res);
+          }
+        }).catch(e => console.log(e));
+    }
+
+    const finish = (finished, handleRes) => {
+      connection.fetchJsonFrom(`/habits/${habitId}/finished`, 'put', this.jwtToken, { finished: finished })
+        .then(res => {
+          if (!res.error && !res.alert) {
+            handleRes(res);
+          }
+        }).catch(e => console.log(e));
+    }
+
+    const deleteHabit = () => {
+      connection.fetchJsonFrom(`/habits/${habitId}`, 'delete', this.jwtToken, null)
+        .then(res => {
+          if (res.habitDeleted) {
+            this.updateHabitList(this.state.habitsURL, this.state.currentPage - 1);
+          }
+        }).catch(e => console.log(e));
+    }
+
+    return ({
+      cheer: cheer.bind(this),
+      checkin: checkin.bind(this),
+      finish: finish.bind(this),
+      deleteHabit: deleteHabit.bind(this)
+    });
+
   }
 
-  showElement(queryString) {
-    document.querySelector(queryString).classList.remove('hidden');
+  getCardById(id, handleRes) {
+    this.handleFetch(connection.fetchJsonFrom(`/habits/${id}`, 'get', this.jwtToken, null), handleRes);
+  }
+
+
+  hideLoading() {
+    document.querySelector('#loading').classList.add('hidden');
+  }
+
+  showLoading() {
+    document.querySelector('#loading').classList.remove('hidden');
   }
 
 }

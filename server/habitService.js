@@ -106,11 +106,17 @@ function sameDay(d1, d2) {
         d1.getDate() === d2.getDate();
 }
 
-async function finishHabit(habitId) {
+async function finishHabit(habitId, finished) {
+    const update = {
+        $set: { finished: finished }
+    };
+    if (!finished){
+        update.$set.height = 0;
+    }
     try {
         const res = await habits.findOneAndUpdate(
             { _id: ObjectId(habitId) },
-            { $set: { finished: true } },
+            update,
             { returnOriginal: false }
         );
         return res.value;

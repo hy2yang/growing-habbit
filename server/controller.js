@@ -132,7 +132,7 @@ app.delete('/habits/:habitId', (req, resp) => {  // delete habit
 });
 
 
-app.post('/habits/:habitId', (req, resp) => {  // user habit checkin
+app.post('/habits/:habitId/checkin', (req, resp) => {  // user habit checkin
     const userId = req.user.userId;
     const habitId = req.params.habitId;
     habitService.checkOwner(userId, habitId).then(isOwner => {
@@ -146,15 +146,16 @@ app.post('/habits/:habitId', (req, resp) => {  // user habit checkin
 });
 
 
-app.post('/habits/:habitId/finished', (req, resp) => {
+app.put('/habits/:habitId/finished', (req, resp) => {
     const userId = req.user.userId;
     const habitId = req.params.habitId;
+    const finished = req.body.finished;
     habitService.checkOwner(userId, habitId).then(isOwner => {
         if (!isOwner || isOwner.error) {
             handleRes({alert : 'you have no permission'}, resp);
         }
         else {
-            habitService.finishHabit(req.params.habitId).then(res =>{
+            habitService.finishHabit(req.params.habitId, finished).then(res =>{
                 console.log(res);
                 handleRes(res, resp);
             } );
@@ -174,7 +175,7 @@ app.get('/habits', (req, resp) => {
     const pageSize = +req.query.pageSize;
     const from = pageNum*pageSize;
     const to = from + pageSize;
-    habitService.getHabitsFrontPage().then(arr => {        
+    habitService.getHabitsFrontPage().then(arr => {
         handleRes(handleArray(arr,from,to), resp);
     });
 });

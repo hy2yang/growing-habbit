@@ -8,8 +8,8 @@ class BrowserPanel extends Component {
         
         const allCards = this.props.array.map(item => {
             return (
-            <div className='habitCard' key={item._id}>
-                <HabitCard habit={item} viewerId={this.props.viewerId}/>
+            <div className='habitCard' key={`${item._id}_${this.props.viewerId}`}>
+                <HabitCard habit={item} viewerId={this.props.viewerId} getCardUpdaters={this.props.getCardUpdaters}/>
             </div>)
         });        
         
