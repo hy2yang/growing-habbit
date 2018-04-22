@@ -1,6 +1,6 @@
 {
   "name": "agate",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "scripts": {
     "start": "node server/controller.js",
     "heroku-postbuild": "cd react-ui/ && npm install && npm run build"
