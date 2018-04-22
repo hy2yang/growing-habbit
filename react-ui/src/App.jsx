@@ -179,7 +179,7 @@ class App extends Component {
   registerNewAccount(body) {
     this.showLoading();
     const handleRes = (res) => {
-      notification['success']({ message: 'logout success' });
+      notification['success']({ message: 'Account created! You can log in now' });
       this.hideLoading();
     };
     this.handleFetch(connection.fetchJsonFrom('/users', 'post', null, body), handleRes);
