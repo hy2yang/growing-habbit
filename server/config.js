@@ -13,7 +13,8 @@ module.exports = {
         '/favicon.ico',
         '/app',
         '/login',
-        '/habits', 
+        /\/habits.*$/, 
+        '/service-worker.js',
         {url: '/users', methods: 'POST'}
     ]
 };
