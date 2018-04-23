@@ -53,7 +53,7 @@ function handleRes(res, resp) {
 app.post('/users', (req, resp) => {
     const username = req.body.username;
     const password = req.body.password;
-    if (REGEX_USERNAME.check(username) && REGEX_PW.check(password)) {
+    if (REGEX_USERNAME.test(username) && REGEX_PW.test(password)) {
         accountService.newUser(username, password).then(res => {
             if (res.userCreated) delete res.userId;
             handleRes(res, resp);
@@ -69,7 +69,7 @@ app.post('/users', (req, resp) => {
 app.post('/login', (req, resp) => {
     const username = req.body.username;
     const password = req.body.password;
-    if (REGEX_USERNAME.check(username) && REGEX_PW.check(password)) {
+    if (REGEX_USERNAME.test(username) && REGEX_PW.test(password)) {
         accountService.login(username, password).then(res => {
             if (res.loggedIn) {
                 res.token = authService.generateToken(res.userId);
@@ -94,7 +94,7 @@ app.put('/users/:username/password', (req, resp) => {  // change password, not y
     const userId = req.user.userId;
     const password = req.body.password;
 
-    if (REGEX_USERNAME.check(username) && REGEX_PW.check(password)) {
+    if (REGEX_USERNAME.test(username) && REGEX_PW.test(password)) {
         accountService.changePw(userId, username, password).then(res => handleRes(res, resp));
     }
     else {
